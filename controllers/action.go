@@ -10,9 +10,10 @@ type ActionListController struct {
 }
 
 func (alc *ActionListController) Get() {
+	alc.log.Trace("route://actions")
 	//siteId := rlc.Ctx.Input.Param(":siteId")
 	actions := []*models.Action{}
-	err := alc.MongoPool.Collection("report").Find(bson.M{}).All(&actions)
+	err := alc.MongoPool.Collection("action").Find(bson.M{}).All(&actions)
 
 	if err != nil {
 		alc.Abort("500")
