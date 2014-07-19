@@ -80,6 +80,7 @@ func (tc *TrackController) Get() {
 
 	tc.MongoPool.Collection("action").Insert(action)
 
+	tc.log.Trace("route://track: %s", website.Url)
 	http.SetCookie(w, userIdCookie)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
