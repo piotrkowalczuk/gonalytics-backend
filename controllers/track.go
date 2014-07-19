@@ -26,25 +26,59 @@ func (tc *TrackController) Get() {
 		}
 	}
 
-	action := new(models.Action)
-	action.Name = tc.GetString("n")
-	action.AppName = tc.GetString("an")
-	action.Referrer = tc.GetString("r")
-	action.Language = tc.GetString("lng")
-	action.Cookie = tc.GetString("c")
-	action.UserAgent = tc.GetString("ua")
-	action.Java, _ = tc.GetBool("p.java")
-	action.BrowserVersion = tc.GetString("b.v")
-	action.BrowserVersionMinor = tc.GetString("b.vm")
-	action.ScreenWidth, _ = tc.GetInt("s.w")
-	action.ScreenHeight, _ = tc.GetInt("s.h")
-	action.WebsiteTitle = tc.GetString("w.t")
-	action.WebsiteHost = tc.GetString("w.h")
-	action.WebsiteUrl = tc.GetString("w.u")
-	action.UserId = userIdCookie.Value
-	action.CreatedAt = models.NewMongoDate(time.Now())
+	plugins := models.Plugins{}
+	plugins.Java, _ = tc.GetBool("b.p.j")
 
-	tc.MongoPool.Collection("report").Insert(action)
+	window := models.Window{}
+	window.Width, _ = tc.GetInt("b.w.w")
+	window.Height, _ = tc.GetInt("b.w.h")
+
+	browser := models.Browser{
+		Name:         tc.GetString("b.n"),
+		Version:      tc.GetString("b.v"),
+		MajorVersion: tc.GetString("b.mv"),
+		UserAgent:    tc.GetString("b.ua"),
+		Platform:     tc.GetString("b.p"),
+		Plugins:      plugins,
+		Window:       window,
+	}
+	browser.Cookie, _ = tc.GetBool("b.c")
+	browser.IsOnline, _ = tc.GetBool("b.io")
+
+	website := models.Website{
+		Title: tc.GetString("w.t"),
+		Host:  tc.GetString("w.h"),
+		Url:   tc.GetString("w.u"),
+	}
+
+	os := models.OperatingSystem{
+		Name: tc.GetString("os.n"),
+	}
+
+	screen := models.Screen{}
+	screen.Width, _ = tc.GetInt("s.w")
+	screen.Height, _ = tc.GetInt("s.h")
+
+	device := models.Device{
+		Name: tc.GetString("d.n"),
+	}
+	device.IsTablet, _ = tc.GetBool("d.it")
+	device.IsPhone, _ = tc.GetBool("d.ip")
+	device.IsMobile, _ = tc.GetBool("d.im")
+
+	action := models.Action{
+		UserId:          userIdCookie.Value,
+		Referrer:        tc.GetString("r"),
+		Language:        tc.GetString("lng"),
+		CreatedAt:       models.NewMongoDate(time.Now()),
+		Browser:         &browser,
+		Website:         &website,
+		OperatingSystem: &os,
+		Screen:          &screen,
+		Device:          &device,
+	}
+
+	tc.MongoPool.Collection("action").Insert(action)
 
 	http.SetCookie(w, userIdCookie)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
