@@ -1,5 +1,5 @@
 
-appname = gonalytics
+appname = gowik
 httpport = 8080
 runmode = dev
 autorender = false

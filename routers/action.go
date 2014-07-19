@@ -6,5 +6,5 @@ import (
 )
 
 func init() {
-	beego.Router("/track", &controllers.TrackController{})
+	beego.Router("/actions", &controllers.ActionListController{})
 }

@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/astaxie/beego"
-	_ "github.com/piotrkowalczuk/gonalytics/routers"
-	"github.com/piotrkowalczuk/gonalytics/services"
+	_ "github.com/piotrkowalczuk/gowik-tracker/routers"
+	"github.com/piotrkowalczuk/gowik-tracker/services"
 )
 
 func main() {
