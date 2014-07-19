@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/piotrkowalczuk/gowik-tracker/models"
+	"github.com/piotrkowalczuk/gowik-tracker/services"
 	"net/http"
 	"time"
 )
@@ -77,6 +78,12 @@ func (tc *TrackController) Get() {
 		OperatingSystem: &os,
 		Screen:          &screen,
 		Device:          &device,
+	}
+
+	geoLocation, err := services.NewGeoLocation("80.48.120.255")
+	if err == nil {
+		location := models.NewLocationFromGeoIP(geoLocation.Location)
+		action.Location = location
 	}
 
 	tc.MongoPool.Collection("action").Insert(action)
