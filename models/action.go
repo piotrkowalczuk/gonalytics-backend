@@ -47,7 +47,8 @@ type Plugins struct {
 }
 
 type OperatingSystem struct {
-	Name string `json:"name" bson:"name"`
+	Name    string `json:"name" bson:"name"`
+	Version string `json:"version" bson:"version"`
 }
 
 type Device struct {
