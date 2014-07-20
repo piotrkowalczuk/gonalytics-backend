@@ -7,4 +7,5 @@ import (
 
 func init() {
 	beego.Router("/actions", &controllers.ActionListController{})
+	beego.Router("/actions/count", &controllers.ActionCountController{})
 }

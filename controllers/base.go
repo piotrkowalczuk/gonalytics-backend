@@ -18,7 +18,7 @@ type (
 func (bc *BaseController) Prepare() {
 	bc.log = logs.NewLogger(10000)
 	bc.log.SetLogger("console", "")
-
+	bc.log.Trace("Http request")
 	bc.MongoPool = services.MongoPool
 }
 

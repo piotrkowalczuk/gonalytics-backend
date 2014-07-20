@@ -2,12 +2,13 @@ package models
 
 import (
 	"github.com/oschwald/geoip2-golang"
+	"labix.org/v2/mgo/bson"
 )
 
 type Action struct {
-	Id              string           `json:"id" bson:"_id,omitempty"`
-	UserId          string           `json:"userId" bson:"userId"`
-	SiteId          int64            `json:"siteId" bson:"siteId"`
+	Id              bson.ObjectId    `json:"id" bson:"_id,omitempty"`
+	VisitId         bson.ObjectId    `json:"visitId" bson:"visit_id"`
+	SiteId          int64            `json:"siteId" bson:"site_id"`
 	Referrer        string           `json:"referrer" bson:"referrer"`
 	Language        string           `json:"language" bson:"language"`
 	Browser         *Browser         `json:"browser" bson:"browser"`

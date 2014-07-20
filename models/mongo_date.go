@@ -30,7 +30,7 @@ func (dtb *MongoDate) AppendBucket(value string) {
 }
 
 func (dtb *MongoDate) AddSecond(t time.Time) {
-	second := t.UTC().Format("2006-01-02 15:04:05") + "-day"
+	second := t.UTC().Format("2006-01-02 15:04:05") + "-second"
 
 	dtb.AppendBucket(second)
 }
@@ -60,13 +60,13 @@ func (dtb *MongoDate) AddWeek(t time.Time) {
 }
 
 func (dtb *MongoDate) AddMonth(t time.Time) {
-	month := t.UTC().Format("2006-01")
+	month := t.UTC().Format("2006-01") + "-month"
 
 	dtb.AppendBucket(month)
 }
 
 func (dtb *MongoDate) AddYear(t time.Time) {
-	year := t.UTC().Format("2006")
+	year := t.UTC().Format("2006") + "-year"
 
 	dtb.AppendBucket(year)
 }
