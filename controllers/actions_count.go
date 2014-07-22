@@ -4,13 +4,13 @@ import (
 	"labix.org/v2/mgo/bson"
 )
 
-type ActionCountController struct {
+type ActionsCountController struct {
 	BaseController
 }
 
-func (acc *ActionCountController) Get() {
+func (acc *ActionsCountController) Get() {
 	dateTimeRange := acc.GetString("dateTimeRange")
-	numberOfActions, err := acc.MongoPool.Collection("action").Find(bson.M{"created_at.bucket": dateTimeRange}).Count()
+	numberOfActions, err := acc.MongoPool.Collection("visit").Find(bson.M{"actions.created_at.bucket": dateTimeRange}).Count()
 
 	if err != nil {
 		acc.Abort("500")
