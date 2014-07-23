@@ -7,6 +7,7 @@ import (
 
 func init() {
 	beego.Router("/visits", &controllers.VisitsController{})
+	beego.Router("/visits/live", &controllers.VisitsLiveController{})
 	beego.Router("/visits/count", &controllers.VisitsCountController{})
 
 	beego.Router("/visits/actions", &controllers.VisitsActionsController{})
