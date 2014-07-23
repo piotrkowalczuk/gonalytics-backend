@@ -11,7 +11,7 @@ type VisitsCountriesCountController struct {
 func (vccc *VisitsCountriesCountController) Get() {
 	dateTimeRange := vccc.GetString("dateTimeRange")
 	pipeline := []bson.M{
-		{"$match": bson.M{"actions.created_at.bucket": dateTimeRange}},
+		{"$match": bson.M{"actions.created_at_bucket": dateTimeRange}},
 		{"$group": bson.M{"_id": "$location.country_id"}},
 		{"$group": bson.M{
 			"_id":             0,

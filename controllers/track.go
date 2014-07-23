@@ -29,10 +29,11 @@ func (tc *TrackController) Get() {
 	}
 
 	action := models.Action{
-		Id:        bson.NewObjectId(),
-		Referrer:  tc.GetString("r"),
-		Page:      &page,
-		CreatedAt: mongoDateNow,
+		Id:              bson.NewObjectId(),
+		Referrer:        tc.GetString("r"),
+		Page:            &page,
+		CreatedAt:       mongoDateNow.DateTime,
+		CreatedAtBucket: mongoDateNow.Bucket,
 	}
 
 	if len(visitId) == 0 {
@@ -80,20 +81,24 @@ func (tc *TrackController) Get() {
 		}
 
 		visit = models.Visit{
-			Id:              bson.NewObjectId(),
-			Referrer:        tc.GetString("r"),
-			Language:        tc.GetString("lng"),
-			Actions:         []*models.Action{&action},
-			NbOfActions:     1,
-			Location:        &location,
-			Browser:         &browser,
-			FirstPage:       &page,
-			OperatingSystem: &os,
-			Screen:          &screen,
-			Device:          &device,
-			CreatedAt:       mongoDateNow,
-			FirstActionAt:   mongoDateNow,
-			LastActionAt:    mongoDateNow,
+			Id:                  bson.NewObjectId(),
+			Referrer:            tc.GetString("r"),
+			Language:            tc.GetString("lng"),
+			Actions:             []*models.Action{&action},
+			NbOfActions:         1,
+			Location:            &location,
+			Browser:             &browser,
+			FirstPage:           &page,
+			LastPage:            &page,
+			OperatingSystem:     &os,
+			Screen:              &screen,
+			Device:              &device,
+			CreatedAt:           mongoDateNow.DateTime,
+			CreatedAtBucket:     mongoDateNow.Bucket,
+			FirstActionAt:       mongoDateNow.DateTime,
+			FirstActionAtBucket: mongoDateNow.Bucket,
+			LastActionAt:        mongoDateNow.DateTime,
+			LastActionAtBucket:  mongoDateNow.Bucket,
 		}
 
 		visitId = visit.Id.Hex()
@@ -110,8 +115,9 @@ func (tc *TrackController) Get() {
 				"$push": bson.M{"actions": action},
 				"$inc":  bson.M{"nb_of_actions": 1},
 				"$set": bson.M{
-					"last_action_at": mongoDateNow,
-					"last_page":      &page,
+					"last_action_at":        mongoDateNow.DateTime,
+					"last_action_at_bucket": mongoDateNow.Bucket,
+					"last_page":             &page,
 				},
 			},
 		)

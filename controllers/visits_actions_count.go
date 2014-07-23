@@ -11,7 +11,7 @@ type VisistsActionsCountController struct {
 func (vacc *VisistsActionsCountController) Get() {
 	dateTimeRange := vacc.GetString("dateTimeRange")
 	pipeline := []bson.M{
-		{"$match": bson.M{"actions.created_at.bucket": dateTimeRange}},
+		{"$match": bson.M{"actions.created_at_bucket": dateTimeRange}},
 		{"$group": bson.M{
 			"_id":           bson.M{},
 			"nb_of_actions": bson.M{"$sum": "$nb_of_actions"},

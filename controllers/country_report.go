@@ -12,7 +12,9 @@ type ReportCountryController struct {
 func (vcc *ReportCountryController) Get() {
 	dateTimeRange := vcc.GetString("dateTimeRange")
 	visits := []*models.Visit{}
-	err := vcc.MongoPool.Collection("visit").Find(bson.M{"created_at.bucket": dateTimeRange}).All(&visits)
+	err := vcc.MongoPool.Collection("visit").Find(
+		bson.M{"created_at_bucket": dateTimeRange},
+	).All(&visits)
 
 	if err != nil {
 		vcc.Abort("500")

@@ -70,9 +70,3 @@ func (dtb *MongoDate) AddYear(t time.Time) {
 
 	dtb.AppendBucket(year)
 }
-
-func (dtb *MongoDate) GetDate() time.Time {
-	//@todo to implement
-
-	return time.Now()
-}

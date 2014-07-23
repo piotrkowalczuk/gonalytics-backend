@@ -10,7 +10,9 @@ type VisitsCountController struct {
 
 func (vcc *VisitsCountController) Get() {
 	dateTimeRange := vcc.GetString("dateTimeRange")
-	numberOfVisits, err := vcc.MongoPool.Collection("visit").Find(bson.M{"created_at.bucket": dateTimeRange}).Count()
+	numberOfVisits, err := vcc.MongoPool.Collection("visit").Find(
+		bson.M{"created_at_bucket": dateTimeRange},
+	).Count()
 
 	if err != nil {
 		vcc.Abort("500")
