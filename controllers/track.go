@@ -15,6 +15,9 @@ type TrackController struct {
 func (tc *TrackController) Get() {
 	var err error
 
+	siteId, err := tc.GetInt("t.sid")
+	tc.abortIf(err, http.StatusBadRequest)
+	
 	w := tc.Ctx.ResponseWriter
 	r := tc.Ctx.Request
 	mongoDateNow := models.NewMongoDate(time.Now())
@@ -86,6 +89,7 @@ func (tc *TrackController) Get() {
 			Language:            tc.GetString("lng"),
 			Actions:             []*models.Action{&action},
 			NbOfActions:         1,
+			SiteId:				 siteId,
 			Location:            &location,
 			Browser:             &browser,
 			FirstPage:           &page,
