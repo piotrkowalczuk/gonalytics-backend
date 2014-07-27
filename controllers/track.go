@@ -5,6 +5,8 @@ import (
 	"github.com/piotrkowalczuk/gowik-tracker/services"
 	"labix.org/v2/mgo/bson"
 	"net/http"
+	"log"
+	"net"
 	"time"
 )
 
@@ -17,12 +19,13 @@ func (tc *TrackController) Get() {
 
 	siteId, err := tc.GetInt("t.sid")
 	tc.abortIf(err, http.StatusBadRequest)
-	
+
 	w := tc.Ctx.ResponseWriter
 	r := tc.Ctx.Request
 	mongoDateNow := models.NewMongoDate(time.Now())
 	domain := r.Header.Get("Origin")
 	visitId := tc.GetString("v.id")
+	requestIp, _, _ := net.SplitHostPort(r.RemoteAddr)
 	var visit models.Visit
 
 	page := models.Page{
@@ -77,7 +80,7 @@ func (tc *TrackController) Get() {
 		device.IsPhone, _ = tc.GetBool("d.ip")
 		device.IsMobile, _ = tc.GetBool("d.im")
 
-		geoLocation, err := services.NewGeoLocation(r.RemoteAddr)
+		geoLocation, err := services.NewGeoLocation(requestIp)
 		location := models.Location{}
 		if err == nil {
 			location = *models.NewLocationFromGeoIP(geoLocation.Location)
