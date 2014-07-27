@@ -21,10 +21,11 @@ func generateVisists(nbOfVisits int) []*Visit {
 		}
 
 		action := Action{
-			Id:        bson.NewObjectId(),
-			Referrer:  "r",
-			Page:      &page,
-			CreatedAt: mongoDateNow,
+			Id:              bson.NewObjectId(),
+			Referrer:        "r",
+			Page:            &page,
+			CreatedAt:       mongoDateNow.DateTime,
+			CreatedAtBucket: mongoDateNow.Bucket,
 		}
 
 		plugins := Plugins{}
@@ -71,20 +72,23 @@ func generateVisists(nbOfVisits int) []*Visit {
 		}
 
 		visit := Visit{
-			Id:              bson.NewObjectId(),
-			Referrer:        "r",
-			Language:        "lng",
-			Actions:         []*Action{&action},
-			NbOfActions:     1,
-			Location:        &location,
-			Browser:         &browser,
-			FirstPage:       &page,
-			OperatingSystem: &os,
-			Screen:          &screen,
-			Device:          &device,
-			CreatedAt:       mongoDateNow,
-			FirstActionAt:   mongoDateNow,
-			LastActionAt:    mongoDateNow,
+			Id:                  bson.NewObjectId(),
+			Referrer:            "r",
+			Language:            "lng",
+			Actions:             []*Action{&action},
+			NbOfActions:         1,
+			Location:            &location,
+			Browser:             &browser,
+			FirstPage:           &page,
+			OperatingSystem:     &os,
+			Screen:              &screen,
+			Device:              &device,
+			CreatedAt:           mongoDateNow.DateTime,
+			CreatedAtBucket:     mongoDateNow.Bucket,
+			FirstActionAt:       mongoDateNow.DateTime,
+			FirstActionAtBucket: mongoDateNow.Bucket,
+			LastActionAt:        mongoDateNow.DateTime,
+			LastActionAtBucket:  mongoDateNow.Bucket,
 		}
 		visits[i] = &visit
 	}

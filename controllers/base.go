@@ -4,6 +4,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/piotrkowalczuk/gowik-tracker/services"
+	"strconv"
 )
 
 type (
@@ -25,4 +26,11 @@ func (bc *BaseController) Prepare() {
 // Finish is called once the baseController method completes
 func (bc *BaseController) Finish() {
 
+}
+
+func (bc *BaseController) abortIf(err error, statusCode int) {
+	if err != nil {
+		bc.log.Error(err.Error())
+		bc.Abort(strconv.FormatInt(int64(statusCode), 10))
+	}
 }

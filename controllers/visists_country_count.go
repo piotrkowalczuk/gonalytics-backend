@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"labix.org/v2/mgo/bson"
+	"net/http"
 )
 
 type VisitsCountriesCountController struct {
@@ -30,11 +31,7 @@ func (vccc *VisitsCountriesCountController) Get() {
 	iter.Next(&result)
 	err := iter.Err()
 
-	if err != nil {
-		panic(err)
-		vccc.Abort("500")
-	}
-
+	vccc.abortIf(err, http.StatusInternalServerError)
 	vccc.Data["json"] = result.NbOfCountries
 	vccc.ServeJson()
 }

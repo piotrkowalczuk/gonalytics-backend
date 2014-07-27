@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/piotrkowalczuk/gowik-tracker/models"
 	"labix.org/v2/mgo/bson"
+	"net/http"
 )
 
 type VisitsActionsController struct {
@@ -13,10 +14,7 @@ func (vac *VisitsActionsController) Get() {
 	actions := []*models.Action{}
 	err := vac.MongoPool.Collection("visits").Find(bson.M{}).All(&actions)
 
-	if err != nil {
-		vac.Abort("500")
-	}
-
+	vac.abortIf(err, http.StatusInternalServerError)
 	vac.Data["json"] = &actions
 	vac.ServeJson()
 }

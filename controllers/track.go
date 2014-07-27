@@ -74,7 +74,7 @@ func (tc *TrackController) Get() {
 		device.IsPhone, _ = tc.GetBool("d.ip")
 		device.IsMobile, _ = tc.GetBool("d.im")
 
-		geoLocation, err := services.NewGeoLocation("80.48.120.255")
+		geoLocation, err := services.NewGeoLocation(r.RemoteAddr)
 		location := models.Location{}
 		if err == nil {
 			location = *models.NewLocationFromGeoIP(geoLocation.Location)
@@ -103,9 +103,7 @@ func (tc *TrackController) Get() {
 
 		visitId = visit.Id.Hex()
 		err = tc.MongoPool.Collection("visit").Insert(&visit)
-		if err != nil {
-			panic(err)
-		}
+		tc.abortIf(err, http.StatusInternalServerError)
 	} else {
 		tc.log.Debug("Existing visit #%s", visitId)
 
@@ -122,9 +120,7 @@ func (tc *TrackController) Get() {
 			},
 		)
 
-		if err != nil {
-			panic(err)
-		}
+		tc.abortIf(err, http.StatusInternalServerError)
 	}
 
 	w.Header().Set("Access-Control-Allow-Credentials", "true")

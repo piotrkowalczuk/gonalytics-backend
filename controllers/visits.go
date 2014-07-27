@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/piotrkowalczuk/gowik-tracker/models"
 	"labix.org/v2/mgo/bson"
+	"net/http"
 )
 
 type VisitsController struct {
@@ -11,12 +12,17 @@ type VisitsController struct {
 
 func (ac *VisitsController) Get() {
 	visits := []*models.Visit{}
-	err := ac.MongoPool.Collection("visit").Find(bson.M{}).All(&visits)
+	dateTimeRange := ac.GetString("dateTimeRange")
 
-	if err != nil {
-		ac.Abort("500")
+	query := bson.M{}
+
+	if dateTimeRange != "" {
+		query["created_at_bucket"] = dateTimeRange
 	}
 
+	err := ac.MongoPool.Collection("visit").Find(query).All(&visits)
+
+	ac.abortIf(err, http.StatusInternalServerError)
 	ac.Data["json"] = &visits
 	ac.ServeJson()
 }

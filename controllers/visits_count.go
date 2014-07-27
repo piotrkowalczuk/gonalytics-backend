@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"labix.org/v2/mgo/bson"
+	"net/http"
 )
 
 type VisitsCountController struct {
@@ -14,10 +15,7 @@ func (vcc *VisitsCountController) Get() {
 		bson.M{"created_at_bucket": dateTimeRange},
 	).Count()
 
-	if err != nil {
-		vcc.Abort("500")
-	}
-
+	vcc.abortIf(err, http.StatusInternalServerError)
 	vcc.Data["json"] = numberOfVisits
 	vcc.ServeJson()
 }

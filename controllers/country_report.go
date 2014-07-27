@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/piotrkowalczuk/gowik-tracker/models"
 	"labix.org/v2/mgo/bson"
+	"net/http"
 )
 
 type ReportCountryController struct {
@@ -16,11 +17,7 @@ func (vcc *ReportCountryController) Get() {
 		bson.M{"created_at_bucket": dateTimeRange},
 	).All(&visits)
 
-	if err != nil {
-		vcc.Abort("500")
-
-	}
-
+	vcc.abortIf(err, http.StatusInternalServerError)
 	vcc.Data["json"] = models.NewCountryReportFromVisits(visits)
 	vcc.ServeJson()
 }
