@@ -5,7 +5,6 @@ import (
 	"github.com/piotrkowalczuk/gowik-tracker/services"
 	"labix.org/v2/mgo/bson"
 	"net/http"
-	"log"
 	"net"
 	"time"
 )
