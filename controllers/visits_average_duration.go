@@ -19,7 +19,7 @@ func (vatc *VisitsAverageTimeController) Get() {
 	query := bson.M{}
 
 	if dateTimeRange != "" {
-		query["created_at_bucket"] = dateTimeRange
+		query["first_action_at_bucket"] = dateTimeRange
 	}
 
 	err := vatc.MongoPool.Collection("visit").Find(query).Select(bson.M{

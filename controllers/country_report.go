@@ -17,7 +17,7 @@ func (vcc *ReportCountryController) Get() {
 	dateTimeRange := vcc.GetString("dateTimeRange")
 	visits := []*models.Visit{}
 	err := vcc.MongoPool.Collection("visit").Find(
-		bson.M{"created_at_bucket": dateTimeRange},
+		bson.M{"first_action_at_bucket": dateTimeRange},
 	).All(&visits)
 
 	vcc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)

@@ -24,8 +24,6 @@ type Visit struct {
 	OperatingSystem     *OperatingSystem `json:"os" bson:"os"`
 	Device              *Device          `json:"device" bson:"device"`
 	Location            *Location        `json:"location" bson:"location"`
-	CreatedAt           time.Time        `json:"createdAt" bson:"created_at"`
-	CreatedAtBucket     []string         `json:"createdAtBucket" bson:"created_at_bucket"`
 	FirstPage           *Page            `json:"firstPage" bson:"first_page"`
 	LastPage            *Page            `json:"lastPage" bson:"last_page"`
 	FirstActionAt       time.Time        `json:"firstActionAt" bson:"first_action_at"`

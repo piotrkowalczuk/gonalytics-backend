@@ -15,7 +15,7 @@ type VisitsCountController struct {
 func (vcc *VisitsCountController) Get() {
 	dateTimeRange := vcc.GetString("dateTimeRange")
 	numberOfVisits, err := vcc.MongoPool.Collection("visit").Find(
-		bson.M{"created_at_bucket": dateTimeRange},
+		bson.M{"first_action_at_bucket": dateTimeRange},
 	).Count()
 
 	vcc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)

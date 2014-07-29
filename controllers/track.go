@@ -102,8 +102,6 @@ func (tc *TrackController) Get() {
 			OperatingSystem:     &os,
 			Screen:              &screen,
 			Device:              &device,
-			CreatedAt:           mongoDateNow.DateTime,
-			CreatedAtBucket:     mongoDateNow.Bucket,
 			FirstActionAt:       mongoDateNow.DateTime,
 			FirstActionAtBucket: mongoDateNow.Bucket,
 			LastActionAt:        mongoDateNow.DateTime,

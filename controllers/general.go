@@ -8,7 +8,7 @@ type GeneralController struct {
 	ResponseData interface{}
 }
 
-// Finish is called once the baseController method completes
+// Finish is called once the method completes
 func (gc *GeneralController) Finish() {
 	outputFormat := gc.GetString("outputFormat")
 
