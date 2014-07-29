@@ -1,30 +1,33 @@
 package controllers
 
 import (
+	"net"
+	"net/http"
+	"time"
+
 	"github.com/piotrkowalczuk/gowik-tracker/models"
 	"github.com/piotrkowalczuk/gowik-tracker/services"
 	"labix.org/v2/mgo/bson"
-	"net/http"
-	"net"
-	"time"
 )
 
+// TrackController ...
 type TrackController struct {
 	BaseController
 }
 
+// Get ...
 func (tc *TrackController) Get() {
 	var err error
 
-	siteId, err := tc.GetInt("t.sid")
-	tc.abortIf(err, http.StatusBadRequest)
+	siteID, err := tc.GetInt("t.sid")
+	tc.AbortIf(err, "Unexpected error.", http.StatusBadRequest)
 
 	w := tc.Ctx.ResponseWriter
 	r := tc.Ctx.Request
 	mongoDateNow := models.NewMongoDate(time.Now())
 	domain := r.Header.Get("Origin")
-	visitId := tc.GetString("v.id")
-	requestIp, _, _ := net.SplitHostPort(r.RemoteAddr)
+	visitID := tc.GetString("v.id")
+	requestIP, _, _ := net.SplitHostPort(r.RemoteAddr)
 	var visit models.Visit
 
 	page := models.Page{
@@ -41,7 +44,7 @@ func (tc *TrackController) Get() {
 		CreatedAtBucket: mongoDateNow.Bucket,
 	}
 
-	if len(visitId) == 0 {
+	if len(visitID) == 0 {
 		tc.log.Debug("New visit")
 
 		plugins := models.Plugins{}
@@ -79,19 +82,19 @@ func (tc *TrackController) Get() {
 		device.IsPhone, _ = tc.GetBool("d.ip")
 		device.IsMobile, _ = tc.GetBool("d.im")
 
-		geoLocation, err := services.NewGeoLocation(requestIp)
+		geoLocation, err := services.NewGeoLocation(requestIP)
 		location := models.Location{}
 		if err == nil {
 			location = *models.NewLocationFromGeoIP(geoLocation.Location)
 		}
 
 		visit = models.Visit{
-			Id:                  bson.NewObjectId(),
+			ID:                  bson.NewObjectId(),
 			Referrer:            tc.GetString("r"),
 			Language:            tc.GetString("lng"),
 			Actions:             []*models.Action{&action},
 			NbOfActions:         1,
-			SiteId:				 siteId,
+			SiteID:              siteID,
 			Location:            &location,
 			Browser:             &browser,
 			FirstPage:           &page,
@@ -107,14 +110,14 @@ func (tc *TrackController) Get() {
 			LastActionAtBucket:  mongoDateNow.Bucket,
 		}
 
-		visitId = visit.Id.Hex()
+		visitID = visit.ID.Hex()
 		err = tc.MongoPool.Collection("visit").Insert(&visit)
-		tc.abortIf(err, http.StatusInternalServerError)
+		tc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
 	} else {
-		tc.log.Debug("Existing visit #%s", visitId)
+		tc.log.Debug("Existing visit #%s", visitID)
 
 		err = tc.MongoPool.Collection("visit").UpdateId(
-			bson.ObjectIdHex(visitId),
+			bson.ObjectIdHex(visitID),
 			bson.M{
 				"$push": bson.M{"actions": action},
 				"$inc":  bson.M{"nb_of_actions": 1},
@@ -126,12 +129,12 @@ func (tc *TrackController) Get() {
 			},
 		)
 
-		tc.abortIf(err, http.StatusInternalServerError)
+		tc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
 	}
 
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Expose-Headers", "Gowik-Visit-Id")
 	w.Header().Set("Access-Control-Allow-Origin", domain)
-	w.Header().Set("Gowik-Visit-Id", visitId)
+	w.Header().Set("Gowik-Visit-Id", visitID)
 	http.ServeFile(w, r, "1x1.gif")
 }

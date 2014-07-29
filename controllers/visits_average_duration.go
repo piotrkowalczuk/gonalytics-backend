@@ -1,15 +1,18 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/piotrkowalczuk/gowik-tracker/models"
 	"labix.org/v2/mgo/bson"
-	"net/http"
 )
 
+// VisitsAverageTimeController ...
 type VisitsAverageTimeController struct {
-	BaseController
+	GeneralController
 }
 
+// Get ...
 func (vatc *VisitsAverageTimeController) Get() {
 	visits := []*models.Visit{}
 	dateTimeRange := vatc.GetString("dateTimeRange")
@@ -24,7 +27,6 @@ func (vatc *VisitsAverageTimeController) Get() {
 		"last_action_at":  1,
 	}).All(&visits)
 
-	vatc.abortIf(err, http.StatusInternalServerError)
-	vatc.Data["json"] = models.VisitsAverageDuration(visits)
-	vatc.ServeJson()
+	vatc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
+	vatc.ResponseData = models.VisitsAverageDuration(visits)
 }

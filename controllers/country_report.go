@@ -1,15 +1,18 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/piotrkowalczuk/gowik-tracker/models"
 	"labix.org/v2/mgo/bson"
-	"net/http"
 )
 
+// ReportCountryController ...
 type ReportCountryController struct {
-	BaseController
+	GeneralController
 }
 
+// Get ...
 func (vcc *ReportCountryController) Get() {
 	dateTimeRange := vcc.GetString("dateTimeRange")
 	visits := []*models.Visit{}
@@ -17,7 +20,6 @@ func (vcc *ReportCountryController) Get() {
 		bson.M{"created_at_bucket": dateTimeRange},
 	).All(&visits)
 
-	vcc.abortIf(err, http.StatusInternalServerError)
-	vcc.Data["json"] = models.NewCountryReportFromVisits(visits)
-	vcc.ServeJson()
+	vcc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
+	vcc.ResponseData = models.NewCountryReportFromVisits(visits)
 }

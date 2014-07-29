@@ -1,29 +1,29 @@
 package controllers
 
 import (
-	"labix.org/v2/mgo/bson"
-	"github.com/piotrkowalczuk/gowik-tracker/models"
 	"net/http"
+
+	"github.com/piotrkowalczuk/gowik-tracker/models"
+	"labix.org/v2/mgo/bson"
 )
 
-// VisitsNumberCountController ...
+// VisitsGroupedByCountryCodeController ...
 type VisitsGroupedByCountryCodeController struct {
-	BaseController
+	GeneralController
 }
 
 // Get handler
-func (this *VisitsGroupedByCountryCodeController) Get() {
+func (vgbccc *VisitsGroupedByCountryCodeController) Get() {
 	visits := []*models.Visit{}
-	timeBucket := this.Ctx.Input.Param(":timeBucket")
+	timeBucket := vgbccc.Ctx.Input.Param(":timeBucket")
 
-	err := this.MongoPool.Collection("visit").Find(bson.M{
+	err := vgbccc.MongoPool.Collection("visit").Find(bson.M{
 		"first_action_at_bucket": timeBucket},
 	).Select(bson.M{
-		"location": 1,
+		"location":        1,
 		"first_action_at": 1,
 	}).All(&visits)
 
-	this.abortIf(err, http.StatusInternalServerError)
-	this.Data["json"] = models.VisitsGroupedLocationCountryCode(visits)
-	this.ServeJson()
+	vgbccc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
+	vgbccc.ResponseData = models.VisitsGroupedLocationCountryCode(visits)
 }

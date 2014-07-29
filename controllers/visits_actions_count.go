@@ -1,14 +1,17 @@
 package controllers
 
 import (
-	"labix.org/v2/mgo/bson"
 	"net/http"
+
+	"labix.org/v2/mgo/bson"
 )
 
+// VisitsActionsCountController ...
 type VisitsActionsCountController struct {
-	BaseController
+	GeneralController
 }
 
+// Get ...
 func (vacc *VisitsActionsCountController) Get() {
 	dateTimeRange := vacc.GetString("dateTimeRange")
 	pipeline := []bson.M{}
@@ -34,7 +37,6 @@ func (vacc *VisitsActionsCountController) Get() {
 	iter.Next(&result)
 	err := iter.Err()
 
-	vacc.abortIf(err, http.StatusInternalServerError)
-	vacc.Data["json"] = result.NbOfActions
-	vacc.ServeJson()
+	vacc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
+	vacc.ResponseData = result.NbOfActions
 }

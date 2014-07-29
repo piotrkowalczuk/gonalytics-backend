@@ -9,5 +9,6 @@ import (
 func main() {
 	mongo := services.NewMongo("localhost", "gowik")
 	mongo.Connect()
+
 	beego.Run()
 }

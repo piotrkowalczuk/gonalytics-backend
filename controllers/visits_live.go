@@ -1,26 +1,28 @@
 package controllers
 
 import (
-	"github.com/piotrkowalczuk/gowik-tracker/models"
-	"labix.org/v2/mgo/bson"
 	"net/http"
 	"time"
+
+	"github.com/piotrkowalczuk/gowik-tracker/models"
+	"labix.org/v2/mgo/bson"
 )
 
+// VisitsLiveController ...
 type VisitsLiveController struct {
-	BaseController
+	GeneralController
 }
 
+// Get ...
 func (vlc *VisitsLiveController) Get() {
 	limit, err := vlc.GetInt("limit")
-	vlc.abortIf(err, http.StatusBadRequest)
+	vlc.AbortIf(err, "Missing limit parameter.", http.StatusBadRequest)
 
 	visits := []*models.Visit{}
 	err = vlc.MongoPool.Collection("visit").Find(bson.M{
-		"last_action_at": bson.M{"$gt": time.Now().Add(-models.MIN_VISIT_DURATION)},
+		"last_action_at": bson.M{"$gt": time.Now().Add(-models.MinVisitDuration)},
 	}).Sort("-last_action_at").Limit(int(limit)).All(&visits)
 
-	vlc.abortIf(err, http.StatusInternalServerError)
-	vlc.Data["json"] = &visits
-	vlc.ServeJson()
+	vlc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
+	vlc.ResponseData = &visits
 }

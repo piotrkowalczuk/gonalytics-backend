@@ -1,20 +1,23 @@
 package models
 
+// CountryReport its collections of summaries
 type CountryReport struct {
 	NbOfReports int64                      `json:"nbOfReports" xml:"nbOfReports"`
 	Reports     map[string]*CountrySummary `json:"reports" xml:"reports"`
 }
 
+// CountrySummary contains basic information about the country
 type CountrySummary struct {
 	CountryName        string `json:"countryName" xml:"countryName"`
 	CountryCode        string `json:"countryCode" xml:"countryCode"`
-	CountryId          uint   `json:"countryId" xml:"countryId"`
+	CountryID          uint   `json:"countryId" xml:"countryId"`
 	NbOfActions        int64  `json:"nbOfActions" xml:"nbOfActions"`
 	NbOfVisits         int64  `json:"nbOfVisits" xml:"nbOfVisits"`
 	NbOfUniqueVisitors int64  `json:"nbOfUniqueVisitors" xml:"nbOfUniqueVisitors"`
-	SiteId             int64  `json:"siteId" xml:"siteId"`
+	SiteID             int64  `json:"siteId" xml:"siteId"`
 }
 
+// NewCountryReportFromVisits creates report based on collection of visits
 func NewCountryReportFromVisits(visits []*Visit) *CountryReport {
 	countryReport := CountryReport{
 		NbOfReports: 0,
@@ -32,11 +35,11 @@ func NewCountryReportFromVisits(visits []*Visit) *CountryReport {
 			countryReport.Reports[countryCode] = &CountrySummary{
 				CountryName:        visit.Location.CountryName,
 				CountryCode:        visit.Location.CountryCode,
-				CountryId:          visit.Location.CountryId,
+				CountryID:          visit.Location.CountryId,
 				NbOfActions:        visit.NbOfActions,
 				NbOfVisits:         1,
 				NbOfUniqueVisitors: 1,
-				SiteId:             visit.SiteId,
+				SiteID:             visit.SiteID,
 			}
 		}
 	}

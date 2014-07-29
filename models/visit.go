@@ -1,19 +1,22 @@
 package models
 
 import (
-	"labix.org/v2/mgo/bson"
 	"time"
+
+	"labix.org/v2/mgo/bson"
 )
 
 const (
-	MIN_VISIT_DURATION = 30 * time.Minute
+	// MinVisitDuration represents minimal duration of single visit
+	MinVisitDuration = 30 * time.Minute
 )
 
+// Visit ...
 type Visit struct {
-	Id                  bson.ObjectId    `json:"id" bson:"_id,omitempty"`
+	ID                  bson.ObjectId    `json:"id" bson:"_id,omitempty"`
 	Actions             []*Action        `json:"actions" bson:"actions"`
 	NbOfActions         int64            `json:"nbOfActions" bson:"nb_of_actions"`
-	SiteId              int64            `json:"siteId" bson:"site_id"`
+	SiteID              int64            `json:"siteId" bson:"site_id"`
 	Referrer            string           `json:"referrer" bson:"referrer"`
 	Language            string           `json:"language" bson:"language"`
 	Browser             *Browser         `json:"browser" bson:"browser"`
@@ -31,6 +34,7 @@ type Visit struct {
 	LastActionAtBucket  []string         `json:"lastActionAtBucket" bson:"last_action_at_bucket"`
 }
 
+// VisitsAverageDuration ...
 func VisitsAverageDuration(visits []*Visit) time.Duration {
 	var averageDuration float64
 	var overallDuration int64
@@ -47,6 +51,7 @@ func VisitsAverageDuration(visits []*Visit) time.Duration {
 	return time.Duration(averageDuration)
 }
 
+// VisitsGroupedByFirstActionAt ...
 func VisitsGroupedByFirstActionAt(visits []*Visit) []*AmountInTime {
 	dateFormat := "2006-01-02 15"
 	groupedVisits := make(map[string]int64)
@@ -54,8 +59,8 @@ func VisitsGroupedByFirstActionAt(visits []*Visit) []*AmountInTime {
 
 	for _, visit := range visits {
 		dateString := visit.FirstActionAt.UTC().Format(dateFormat)
-		if _,ok := groupedVisits[dateString]; ok {
-		    groupedVisits[dateString] += 1
+		if _, ok := groupedVisits[dateString]; ok {
+			groupedVisits[dateString]++
 		} else {
 			groupedVisits[dateString] = 1
 		}
@@ -64,7 +69,7 @@ func VisitsGroupedByFirstActionAt(visits []*Visit) []*AmountInTime {
 	for dateString, nbOfVisits := range groupedVisits {
 		dateTime, _ := time.Parse(dateFormat, dateString)
 		visitNumber := AmountInTime{
-			Amount: nbOfVisits,
+			Amount:   nbOfVisits,
 			DateTime: dateTime,
 		}
 
@@ -74,12 +79,13 @@ func VisitsGroupedByFirstActionAt(visits []*Visit) []*AmountInTime {
 	return visitsNumber
 }
 
+// VisitsGroupedLocationCountryCode ...
 func VisitsGroupedLocationCountryCode(visits []*Visit) map[string]int64 {
 	grouped := make(map[string]int64)
 
 	for _, visit := range visits {
-		if _,ok := grouped[visit.Location.CountryCode]; ok {
-			grouped[visit.Location.CountryCode] += 1
+		if _, ok := grouped[visit.Location.CountryCode]; ok {
+			grouped[visit.Location.CountryCode]++
 		} else {
 			grouped[visit.Location.CountryCode] = 1
 		}

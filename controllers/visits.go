@@ -1,15 +1,18 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/piotrkowalczuk/gowik-tracker/models"
 	"labix.org/v2/mgo/bson"
-	"net/http"
 )
 
+// VisitsController ...
 type VisitsController struct {
-	BaseController
+	GeneralController
 }
 
+// Get ..
 func (ac *VisitsController) Get() {
 	visits := []*models.Visit{}
 	dateTimeRange := ac.GetString("dateTimeRange")
@@ -22,7 +25,6 @@ func (ac *VisitsController) Get() {
 
 	err := ac.MongoPool.Collection("visit").Find(query).All(&visits)
 
-	ac.abortIf(err, http.StatusInternalServerError)
-	ac.Data["json"] = &visits
-	ac.ServeJson()
+	ac.AbortIf(err, "Unexpected error", http.StatusInternalServerError)
+	ac.ResponseData = &visits
 }

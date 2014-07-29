@@ -4,16 +4,15 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/piotrkowalczuk/gowik-tracker/services"
-	"strconv"
 )
 
-type (
-	BaseController struct {
-		beego.Controller
-		MongoPool services.Pool
-		log       *logs.BeeLogger
-	}
-)
+// BaseController contains common properties accross multiple controllers
+type BaseController struct {
+	beego.Controller
+	MongoPool services.Pool
+	log       *logs.BeeLogger
+	response  interface{}
+}
 
 // Prepare is called prior to the baseController method
 func (bc *BaseController) Prepare() {
@@ -25,12 +24,12 @@ func (bc *BaseController) Prepare() {
 
 // Finish is called once the baseController method completes
 func (bc *BaseController) Finish() {
-
 }
 
-func (bc *BaseController) abortIf(err error, statusCode int) {
+// AbortIf return response if only err is not nil.
+func (bc *BaseController) AbortIf(err error, message string, statusCode int) {
 	if err != nil {
 		bc.log.Error(err.Error())
-		bc.Abort(strconv.FormatInt(int64(statusCode), 10))
+		bc.Ctx.Abort(statusCode, message)
 	}
 }

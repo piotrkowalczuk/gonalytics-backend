@@ -1,14 +1,17 @@
 package controllers
 
 import (
-	"labix.org/v2/mgo/bson"
 	"net/http"
+
+	"labix.org/v2/mgo/bson"
 )
 
+// VisitsCountriesCountController ...
 type VisitsCountriesCountController struct {
-	BaseController
+	GeneralController
 }
 
+// Get ...
 func (vccc *VisitsCountriesCountController) Get() {
 	dateTimeRange := vccc.GetString("dateTimeRange")
 	pipeline := []bson.M{
@@ -31,7 +34,6 @@ func (vccc *VisitsCountriesCountController) Get() {
 	iter.Next(&result)
 	err := iter.Err()
 
-	vccc.abortIf(err, http.StatusInternalServerError)
-	vccc.Data["json"] = result.NbOfCountries
-	vccc.ServeJson()
+	vccc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
+	vccc.ResponseData = result.NbOfCountries
 }
