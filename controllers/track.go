@@ -24,7 +24,8 @@ func (tc *TrackController) Get() {
 
 	w := tc.Ctx.ResponseWriter
 	r := tc.Ctx.Request
-	mongoDateNow := models.NewMongoDate(time.Now())
+	now := time.Now()
+	mongoDateNow := models.NewMongoDate(&now)
 	domain := r.Header.Get("Origin")
 	visitID := tc.GetString("v.id")
 	requestIP, _, _ := net.SplitHostPort(r.RemoteAddr)
@@ -37,7 +38,7 @@ func (tc *TrackController) Get() {
 	}
 
 	action := models.Action{
-		Id:              bson.NewObjectId(),
+		ID:              bson.NewObjectId(),
 		Referrer:        tc.GetString("r"),
 		Page:            &page,
 		CreatedAt:       mongoDateNow.DateTime,

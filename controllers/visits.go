@@ -23,7 +23,12 @@ func (ac *VisitsController) Get() {
 		query["created_at_bucket"] = dateTimeRange
 	}
 
-	err := ac.MongoPool.Collection("visit").Find(query).All(&visits)
+	err := ac.MongoPool.Collection("visit").
+		Find(query).
+		Select(ac.GetQuerySelect()).
+		Skip(ac.GetQuerySkip()).
+		Limit(ac.GetQueryLimit()).
+		All(&visits)
 
 	ac.AbortIf(err, "Unexpected error", http.StatusInternalServerError)
 	ac.ResponseData = &visits
