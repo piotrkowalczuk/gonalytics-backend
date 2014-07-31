@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/piotrkowalczuk/gowik-tracker/models"
-	"github.com/piotrkowalczuk/gowik-tracker/services"
+	"github.com/piotrkowalczuk/gonalytics-tracker/models"
+	"github.com/piotrkowalczuk/gonalytics-tracker/services"
 	"labix.org/v2/mgo/bson"
 )
 

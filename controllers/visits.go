@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/piotrkowalczuk/gowik-tracker/models"
+	"github.com/piotrkowalczuk/gonalytics-tracker/models"
 	"labix.org/v2/mgo/bson"
 )
 

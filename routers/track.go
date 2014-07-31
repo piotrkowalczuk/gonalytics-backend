@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/piotrkowalczuk/gowik-tracker/controllers"
+	"github.com/piotrkowalczuk/gonalytics-tracker/controllers"
 )
 
 func init() {

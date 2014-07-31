@@ -3,7 +3,7 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
-	"github.com/piotrkowalczuk/gowik-tracker/services"
+	"github.com/piotrkowalczuk/gonalytics-tracker/services"
 )
 
 // BaseController contains common properties accross multiple controllers

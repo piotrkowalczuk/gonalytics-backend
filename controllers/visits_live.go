@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/piotrkowalczuk/gowik-tracker/models"
+	"github.com/piotrkowalczuk/gonalytics-tracker/models"
 	"labix.org/v2/mgo/bson"
 )
 
