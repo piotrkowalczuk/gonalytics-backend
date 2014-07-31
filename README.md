@@ -18,7 +18,7 @@ Commands
 
 #### Build
 
-    go build app.go
+    go build
 
 
 Dependencies
