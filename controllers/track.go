@@ -132,8 +132,8 @@ func (tc *TrackController) Get() {
 	}
 
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Expose-Headers", "Gowik-Visit-Id")
+	w.Header().Set("Access-Control-Expose-Headers", "Gonaltics-Visit-Id")
 	w.Header().Set("Access-Control-Allow-Origin", domain)
-	w.Header().Set("Gowik-Visit-Id", visitID)
+	w.Header().Set("Gonaltics-Visit-Id", visitID)
 	http.ServeFile(w, r, "1x1.gif")
 }
