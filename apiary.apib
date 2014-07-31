@@ -1,0 +1,282 @@
+FORMAT: 1A
+HOST: http://www.google.com
+
+# Gonalytics-Tracker
+Notes API is a *short texts saving* service similar to its physical paper presence on your table.
+
+# Group Tracking
+Its main functionalyti of tracker. This route accepts bunch of get params which describe visitor and/or action.
+## Track [/track?t.sid&v.id&p.t&w.h&p.u&b.n&b.v&b.mv&b.ua&b.p&b.c&b.io&b.p.j&b.w.w&b.w.h&d.n&d.it&d.ip&d.im&os.n&os.v&lng&r&s.w&s.h]
+### Track [GET]
++ Response 200 (image/gif)
+    + Headers
+    
+            Access-Control-Allow-Credentials: true
+            Access-Control-Allow-Origin: http://superbudzik.pl
+            Access-Control-Expose-Headers: Gonalytics-Visit-Id
+            Gonalytics-Visit-Id: 53dabd7fde8b7166b3001e80
+
++ Parameters
+    + t.sid (required, integer, `523`) ... Tracker site ID
+    + v.id (required, string, `53dabd7fde8b7166b3001e80`) ... Visit ID
+    + p.t (required, string, `Superbudzik - najlepszy budzik online!`) ... Page title
+    + w.h (required, string, `superbudzik.pl`) ... Website host
+    + p.u (required, string, `http://superbudzik.pl/`) ... Page URL
+    + b.n (required, string, `Chrome`) ... Browser name
+    + b.v (required, string, `36.0.1985.125`) ... Browser version
+    + b.mv (required, integer, `36`) ... Browse major version
+    + b.ua (required, string, `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36`) ... Browser user agent
+    + b.p (required, string, `MacIntel`) ... Browser platform
+    + b.c (required, bool, `true`) ... Browser cookies
+    + b.io (required, bool, `true`) ... Browser is online
+    + b.p.j (required, bool, `true`) ... Browser plugin Java
+    + b.w.w (required, integer, `1024`) ... Browser window width
+    + b.w.h (required, integer, `786`) ... Browser window height
+    + d.n (optional, string, `iPhone 5`) ... Device name
+    + d.it (required, bool, `true`) ... Device is tablet
+    + d.ip (required, bool, `false`) ... Device is phone
+    + d.im (required, bool, `true`) ... Device is mobile
+    + os.n (required, string, `Mac OS X`) ... Operating system name
+    + os.v (required, string, `10_9_4`) ... Operating system version
+    + lng (required, string, `de`) ... Language
+    + r (optional, string, `http://google.de/`) ... Referrer
+    + s.w (required, integer, `1280`) ... Screen width
+    + s.h (required, integer, `800`) ... Screen height
+    
+# Group Visits
+## Visits Collection [/visits]
+### List all visits [GET]
++ Response 200 (application/json)
+
+        [
+          {
+            "id": "53d85f89de8b7166b30009a3",
+            "actions": [
+              {
+                "id": "53d85f89de8b7166b30009a2",
+                "referrer": "",
+                "page": {
+                  "title": "Superbudzik - najlepszy budzik online!",
+                  "host": "",
+                  "url": "http://superbudzik.pl/"
+                },
+                "createdAt": "2014-07-30T02:59:21.727Z",
+                "createdAtBucket": [
+                  "2014-07-30 02:59:21-second",
+                  "2014-07-30 02:59-minute",
+                  "2014-07-30 02-hour",
+                  "2014-07-30-day",
+                  "2014-31-week",
+                  "2014-07-month",
+                  "2014-year"
+                ]
+              }
+            ],
+            "nbOfActions": 1,
+            "siteId": 2,
+            "referrer": "",
+            "language": "en-GB",
+            "browser": {
+              "name": "Firefox",
+              "version": "30.0",
+              "majorVersion": "30",
+              "userAgent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0",
+              "platform": "Win32",
+              "cookie": true,
+              "plugins": {
+                "java": true
+              },
+              "isOnline": true,
+              "window": {
+                "width": 1680,
+                "height": 909
+              }
+            },
+            "screen": {
+              "width": 1680,
+              "height": 1050
+            },
+            "os": {
+              "name": "Windows 7",
+              "version": "7"
+            },
+            "device": {
+              "name": "",
+              "isMobile": false,
+              "isTablet": false,
+              "isPhone": false
+            },
+            "location": {
+              "cityName": "Wolverhampton",
+              "cityId": 2633691,
+              "countryName": "United Kingdom",
+              "countryCode": "GB",
+              "countryId": 2635167,
+              "continentName": "Europe",
+              "continentCode": "EU",
+              "continentId": 6255148,
+              "latitude": 52.5564,
+              "longitude": -2.1235,
+              "metroCode": 0,
+              "timeZone": "Europe/London",
+              "postalCode": "WV4",
+              "isAnonymousProxy": false,
+              "isSatelliteProvider": false
+            },
+            "createdAt": "2014-07-30T02:59:21.727Z",
+            "createdAtBucket": [
+              "2014-07-30 02:59:21-second",
+              "2014-07-30 02:59-minute",
+              "2014-07-30 02-hour",
+              "2014-07-30-day",
+              "2014-31-week",
+              "2014-07-month",
+              "2014-year"
+            ],
+            "firstPage": {
+              "title": "Superbudzik - najlepszy budzik online!",
+              "host": "",
+              "url": "http://superbudzik.pl/"
+            },
+            "lastPage": {
+              "title": "Superbudzik - najlepszy budzik online!",
+              "host": "",
+              "url": "http://superbudzik.pl/"
+            },
+            "firstActionAt": "2014-07-30T02:59:21.727Z",
+            "firstActionAtBucket": [
+              "2014-07-30 02:59:21-second",
+              "2014-07-30 02:59-minute",
+              "2014-07-30 02-hour",
+              "2014-07-30-day",
+              "2014-31-week",
+              "2014-07-month",
+              "2014-year"
+            ],
+            "lastActionAt": "2014-07-30T02:59:21.727Z",
+            "lastActionAtBucket": [
+              "2014-07-30 02:59:21-second",
+              "2014-07-30 02:59-minute",
+              "2014-07-30 02-hour",
+              "2014-07-30-day",
+              "2014-31-week",
+              "2014-07-month",
+              "2014-year"
+            ]
+          },
+          {
+            "id": "53d85fb6de8b7166b30009a5",
+            "actions": [
+              {
+                "id": "53d85fb6de8b7166b30009a4",
+                "referrer": "http://semalt.semalt.com/crawler.php?u=http://lo-zary.pl",
+                "page": {
+                  "title": "I LO im B. Prusa w Żarach | Strona Główna",
+                  "host": "",
+                  "url": "http://lo-zary.pl/"
+                },
+                "createdAt": "2014-07-30T03:00:06.313Z",
+                "createdAtBucket": [
+                  "2014-07-30 03:00:06-second",
+                  "2014-07-30 03:00-minute",
+                  "2014-07-30 03-hour",
+                  "2014-07-30-day",
+                  "2014-31-week",
+                  "2014-07-month",
+                  "2014-year"
+                ]
+              }
+            ],
+            "nbOfActions": 1,
+            "siteId": 3,
+            "referrer": "http://semalt.semalt.com/crawler.php?u=http://lo-zary.pl",
+            "language": "pt-BR",
+            "browser": {
+              "name": "Chrome",
+              "version": "32.0.1700.107",
+              "majorVersion": "32",
+              "userAgent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36",
+              "platform": "Win32",
+              "cookie": true,
+              "plugins": {
+                "java": false
+              },
+              "isOnline": false,
+              "window": {
+                "width": 100,
+                "height": 30
+              }
+            },
+            "screen": {
+              "width": 1366,
+              "height": 768
+            },
+            "os": {
+              "name": "Windows 7",
+              "version": "7"
+            },
+            "device": {
+              "name": "",
+              "isMobile": false,
+              "isTablet": false,
+              "isPhone": false
+            },
+            "location": {
+              "cityName": "",
+              "cityId": 0,
+              "countryName": "Brazil",
+              "countryCode": "BR",
+              "countryId": 3469034,
+              "continentName": "South America",
+              "continentCode": "SA",
+              "continentId": 6255150,
+              "latitude": -10,
+              "longitude": -55,
+              "metroCode": 0,
+              "timeZone": "",
+              "postalCode": "",
+              "isAnonymousProxy": false,
+              "isSatelliteProvider": false
+            },
+            "createdAt": "2014-07-30T03:00:06.313Z",
+            "createdAtBucket": [
+              "2014-07-30 03:00:06-second",
+              "2014-07-30 03:00-minute",
+              "2014-07-30 03-hour",
+              "2014-07-30-day",
+              "2014-31-week",
+              "2014-07-month",
+              "2014-year"
+            ],
+            "firstPage": {
+              "title": "I LO im B. Prusa w Żarach | Strona Główna",
+              "host": "",
+              "url": "http://lo-zary.pl/"
+            },
+            "lastPage": {
+              "title": "I LO im B. Prusa w Żarach | Strona Główna",
+              "host": "",
+              "url": "http://lo-zary.pl/"
+            },
+            "firstActionAt": "2014-07-30T03:00:06.313Z",
+            "firstActionAtBucket": [
+              "2014-07-30 03:00:06-second",
+              "2014-07-30 03:00-minute",
+              "2014-07-30 03-hour",
+              "2014-07-30-day",
+              "2014-31-week",
+              "2014-07-month",
+              "2014-year"
+            ],
+            "lastActionAt": "2014-07-30T03:00:06.313Z",
+            "lastActionAtBucket": [
+              "2014-07-30 03:00:06-second",
+              "2014-07-30 03:00-minute",
+              "2014-07-30 03-hour",
+              "2014-07-30-day",
+              "2014-31-week",
+              "2014-07-month",
+              "2014-year"
+            ]
+          }
+        ]
