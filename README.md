@@ -6,7 +6,7 @@ Gonalytic is a open source web analytics application. It consists of:
 - tracking script: https://github.com/piotrkowalczuk/gonalytics-tracking-script
 - dashboard: https://github.com/piotrkowalczuk/gonalytics-dashboard
 
-Installation
+Development
 ------------
 1. Set you GOPATH properly (http://golang.org/doc/code.html#GOPATH)
 2. `go get github.com/piotrkowalczuk/gonalytics-tracker`
