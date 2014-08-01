@@ -20,6 +20,9 @@ Commands
 
     go build
 
+Web API
+--------
+Public API documentation is available at http://docs.gonalyticstracker.apiary.io. The documentation is integrated into the repository. The current documentation is a reflection of the `apiary.apib` file.
 
 Dependencies
 ------------
