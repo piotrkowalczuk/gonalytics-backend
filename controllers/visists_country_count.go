@@ -9,6 +9,9 @@ import (
 // VisitsCountriesCountController ...
 type VisitsCountriesCountController struct {
 	GeneralController
+	ResponseData struct {
+		NbOfCountries int64 `bson:"nb_of_countries"`
+	}
 }
 
 // Get ...
@@ -26,14 +29,8 @@ func (vccc *VisitsCountriesCountController) Get() {
 		}},
 	}
 
-	var result struct {
-		NbOfCountries int64 `bson:"nb_of_countries"`
-	}
-
 	iter := vccc.MongoPool.Collection("visit").Pipe(pipeline).Iter()
-	iter.Next(&result)
-	err := iter.Err()
+	iter.Next(&vccc.ResponseData)
 
-	vccc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
-	vccc.ResponseData = result.NbOfCountries
+	vccc.AbortIf(iter.Err(), "Unexpected error.", http.StatusInternalServerError)
 }

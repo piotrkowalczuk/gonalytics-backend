@@ -14,7 +14,7 @@ const (
 // Visit ...
 type Visit struct {
 	ID                  bson.ObjectId    `json:"id,omitempty" bson:"_id,omitempty"`
-	Actions             []*Action        `json:"actions,omitempty" bson:"actions"`
+	IP                  string           `json:"ip,omitempty" bson:"ip,omitempty"`
 	NbOfActions         int64            `json:"nbOfActions,omitempty" bson:"nb_of_actions"`
 	SiteID              int64            `json:"siteId,omitempty" bson:"site_id"`
 	Referrer            string           `json:"referrer,omitempty" bson:"referrer"`
@@ -32,30 +32,38 @@ type Visit struct {
 	LastActionAtBucket  []string         `json:"lastActionAtBucket,omitempty" bson:"last_action_at_bucket"`
 }
 
+// Visits ...
+type Visits []*Visit
+
+// Length ...
+func (v *Visits) Length() int {
+	return len(*v)
+}
+
 // VisitsAverageDuration ...
-func VisitsAverageDuration(visits []*Visit) time.Duration {
+func (v *Visits) VisitsAverageDuration() time.Duration {
 	var averageDuration float64
 	var overallDuration int64
 
-	if len(visits) == 0 {
+	if v.Length() == 0 {
 		return 0
 	}
 
-	for _, visit := range visits {
+	for _, visit := range *v {
 		overallDuration += visit.LastActionAt.Sub(*visit.FirstActionAt).Nanoseconds()
 	}
 
-	averageDuration = float64(overallDuration) / float64(len(visits))
+	averageDuration = float64(overallDuration) / float64(v.Length())
 	return time.Duration(averageDuration)
 }
 
 // VisitsGroupedByFirstActionAt ...
-func VisitsGroupedByFirstActionAt(visits []*Visit) []*AmountInTime {
+func (v *Visits) VisitsGroupedByFirstActionAt() []*AmountInTime {
 	dateFormat := "2006-01-02 15"
 	groupedVisits := make(map[string]int64)
 	visitsNumber := []*AmountInTime{}
 
-	for _, visit := range visits {
+	for _, visit := range *v {
 		dateString := visit.FirstActionAt.UTC().Format(dateFormat)
 		if _, ok := groupedVisits[dateString]; ok {
 			groupedVisits[dateString]++
@@ -78,10 +86,10 @@ func VisitsGroupedByFirstActionAt(visits []*Visit) []*AmountInTime {
 }
 
 // VisitsGroupedLocationCountryCode ...
-func VisitsGroupedLocationCountryCode(visits []*Visit) map[string]int64 {
+func (v *Visits) VisitsGroupedLocationCountryCode() map[string]int64 {
 	grouped := make(map[string]int64)
 
-	for _, visit := range visits {
+	for _, visit := range *v {
 		if _, ok := grouped[visit.Location.CountryCode]; ok {
 			grouped[visit.Location.CountryCode]++
 		} else {

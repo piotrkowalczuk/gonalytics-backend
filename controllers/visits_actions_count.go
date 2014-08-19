@@ -9,6 +9,9 @@ import (
 // VisitsActionsCountController ...
 type VisitsActionsCountController struct {
 	GeneralController
+	ResponseData struct {
+		NbOfActions int64 `json:"nbOfActions" bson:"nb_of_actions"`
+	}
 }
 
 // Get ...
@@ -29,14 +32,8 @@ func (vacc *VisitsActionsCountController) Get() {
 		"nb_of_actions": 1,
 	}})
 
-	var result struct {
-		NbOfActions int64 `bson:"nb_of_actions"`
-	}
-
 	iter := vacc.MongoPool.Collection("visit").Pipe(pipeline).Iter()
-	iter.Next(&result)
-	err := iter.Err()
+	iter.Next(&vacc.ResponseData)
 
-	vacc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
-	vacc.ResponseData = result.NbOfActions
+	vacc.AbortIf(iter.Err(), "Unexpected error.", http.StatusInternalServerError)
 }

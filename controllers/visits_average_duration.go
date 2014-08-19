@@ -14,7 +14,7 @@ type VisitsAverageTimeController struct {
 
 // Get ...
 func (vatc *VisitsAverageTimeController) Get() {
-	visits := []*models.Visit{}
+	var visits models.Visits
 	dateTimeRange := vatc.GetString("dateTimeRange")
 	query := bson.M{}
 
@@ -28,5 +28,5 @@ func (vatc *VisitsAverageTimeController) Get() {
 	}).All(&visits)
 
 	vatc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
-	vatc.ResponseData = models.VisitsAverageDuration(visits)
+	vatc.ResponseData = visits.VisitsAverageDuration()
 }
