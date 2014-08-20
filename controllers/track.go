@@ -71,30 +71,25 @@ func (tc *TrackController) Get() {
 		MadeAtBucket:           mongoDateNow.Bucket,
 	}
 
-	var visitID string
-	visitID = trackRequest.VisitID
-
 	if trackRequest.IsNewVisit() {
 		tc.log.Debug("New visit")
 
 		visitCreator := services.NewVisitCreator(&trackRequest)
-
 		err = tc.MongoPool.Collection("visit").Insert(&visitCreator.Visit)
-		visitID = visitCreator.Visit.ID.Hex()
-		trackRequest.VisitID = visitID
+		trackRequest.VisitID = visitCreator.Visit.ID.Hex()
 
 		actionCreator := services.NewActionCreator(&trackRequest)
 		err = tc.MongoPool.Collection("action").Insert(&actionCreator.Action)
 
 		tc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
 	} else {
-		tc.log.Debug("Existing visit #%s", visitID)
+		tc.log.Debug("Existing visit #%s", trackRequest.VisitID)
 
 		actionCreator := services.NewActionCreator(&trackRequest)
 
 		err = tc.MongoPool.Collection("action").Insert(&actionCreator.Action)
 		err = tc.MongoPool.Collection("visit").UpdateId(
-			bson.ObjectIdHex(visitID),
+			bson.ObjectIdHex(trackRequest.VisitID),
 			bson.M{
 				"$inc": bson.M{"nb_of_actions": 1},
 				"$set": bson.M{
@@ -111,6 +106,6 @@ func (tc *TrackController) Get() {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Expose-Headers", "Gonalytics-Visit-Id")
 	w.Header().Set("Access-Control-Allow-Origin", trackRequest.Domain)
-	w.Header().Set("Gonalytics-Visit-Id", visitID)
+	w.Header().Set("Gonalytics-Visit-Id", trackRequest.VisitID)
 	http.ServeFile(w, r, "data/1x1.gif")
 }
