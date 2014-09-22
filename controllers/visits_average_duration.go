@@ -22,7 +22,7 @@ func (vatc *VisitsAverageTimeController) Get() {
 		query["first_action_at_bucket"] = dateTimeRange
 	}
 
-	err := vatc.MongoPool.Collection("visit").Find(query).Select(bson.M{
+	err := vatc.MongoDB.C("visit").Find(query).Select(bson.M{
 		"first_action_at": 1,
 		"last_action_at":  1,
 	}).All(&visits)

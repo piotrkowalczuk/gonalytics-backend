@@ -14,16 +14,16 @@ type VisitsController struct {
 
 // Get ..
 func (ac *VisitsController) Get() {
-	visits := []*models.Visit{}
+	visits := models.Visits{}
 	dateTimeRange := ac.GetString("dateTimeRange")
 
 	query := bson.M{}
 
 	if dateTimeRange != "" {
-		query["created_at_bucket"] = dateTimeRange
+		query["first_action_at_bucket"] = dateTimeRange
 	}
 
-	err := ac.MongoPool.Collection("visit").
+	err := ac.RepositoryManager.Visit.
 		Find(query).
 		Select(ac.GetQuerySelect()).
 		Skip(ac.GetQuerySkip()).

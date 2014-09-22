@@ -30,6 +30,8 @@ type Visit struct {
 	FirstActionAtBucket []string         `json:"firstActionAtBucket,omitempty" bson:"first_action_at_bucket"`
 	LastActionAt        *time.Time       `json:"lastActionAt,omitempty" bson:"last_action_at"`
 	LastActionAtBucket  []string         `json:"lastActionAtBucket,omitempty" bson:"last_action_at_bucket"`
+	// Fields not related to database, comes from JOIN's etc.
+	Actions Actions `json:"actions,omitempty" bson:"-"`
 }
 
 // Visits ...
@@ -38,6 +40,28 @@ type Visits []*Visit
 // Length ...
 func (v *Visits) Length() int {
 	return len(*v)
+}
+
+// GetIDs ...
+func (v *Visits) GetIDs() (IDs []*bson.ObjectId) {
+	for _, visit := range *v {
+		IDs = append(IDs, &visit.ID)
+	}
+
+	return
+}
+
+// GetByID returns first Visit object with given ID.
+func (v *Visits) GetByID(ID bson.ObjectId) (*Visit, error) {
+	var err error
+
+	for _, visit := range *v {
+		if visit.ID == ID {
+			return visit, nil
+		}
+	}
+
+	return nil, err
 }
 
 // VisitsAverageDuration ...
@@ -57,22 +81,22 @@ func (v *Visits) VisitsAverageDuration() time.Duration {
 	return time.Duration(averageDuration)
 }
 
-// VisitsGroupedByFirstActionAt ...
-func (v *Visits) VisitsGroupedByFirstActionAt() []*AmountInTime {
+// MapToDistributionByTime ...
+func (v *Visits) MapToDistributionByTime() []*AmountInTime {
 	dateFormat := "2006-01-02 15"
-	groupedVisits := make(map[string]int64)
+	distribution := make(map[string]int64)
 	visitsNumber := []*AmountInTime{}
 
 	for _, visit := range *v {
 		dateString := visit.FirstActionAt.UTC().Format(dateFormat)
-		if _, ok := groupedVisits[dateString]; ok {
-			groupedVisits[dateString]++
+		if _, ok := distribution[dateString]; ok {
+			distribution[dateString]++
 		} else {
-			groupedVisits[dateString] = 1
+			distribution[dateString] = 1
 		}
 	}
 
-	for dateString, nbOfVisits := range groupedVisits {
+	for dateString, nbOfVisits := range distribution {
 		dateTime, _ := time.Parse(dateFormat, dateString)
 		visitNumber := AmountInTime{
 			Amount:   nbOfVisits,
@@ -85,17 +109,26 @@ func (v *Visits) VisitsGroupedByFirstActionAt() []*AmountInTime {
 	return visitsNumber
 }
 
-// VisitsGroupedLocationCountryCode ...
-func (v *Visits) VisitsGroupedLocationCountryCode() map[string]int64 {
-	grouped := make(map[string]int64)
+// MapToDistributionByCountryCode ...
+func (v *Visits) MapToDistributionByCountryCode() (amount []*AmountInCountry) {
+	distribution := make(map[string]int64)
 
 	for _, visit := range *v {
-		if _, ok := grouped[visit.Location.CountryCode]; ok {
-			grouped[visit.Location.CountryCode]++
+		if _, ok := distribution[visit.Location.CountryCode]; ok {
+			distribution[visit.Location.CountryCode]++
 		} else {
-			grouped[visit.Location.CountryCode] = 1
+			distribution[visit.Location.CountryCode] = 1
 		}
 	}
 
-	return grouped
+	for countryCode, nbOfVisits := range distribution {
+		visitNumber := &AmountInCountry{
+			Amount:      nbOfVisits,
+			CountryCode: countryCode,
+		}
+
+		amount = append(amount, visitNumber)
+	}
+
+	return
 }

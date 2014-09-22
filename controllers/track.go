@@ -17,8 +17,6 @@ type TrackController struct {
 
 // Get ...
 func (tc *TrackController) Get() {
-	var err error
-
 	w := tc.Ctx.ResponseWriter
 	r := tc.Ctx.Request
 
@@ -72,23 +70,23 @@ func (tc *TrackController) Get() {
 	}
 
 	if trackRequest.IsNewVisit() {
-		tc.log.Debug("New visit")
+		tc.Log.Debug("New visit")
 
 		visitCreator := services.NewVisitCreator(&trackRequest)
-		err = tc.MongoPool.Collection("visit").Insert(&visitCreator.Visit)
+		err = tc.MongoDB.C("visit").Insert(&visitCreator.Visit)
 		trackRequest.VisitID = visitCreator.Visit.ID.Hex()
 
 		actionCreator := services.NewActionCreator(&trackRequest)
-		err = tc.MongoPool.Collection("action").Insert(&actionCreator.Action)
+		err = tc.MongoDB.C("action").Insert(&actionCreator.Action)
 
 		tc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
 	} else {
-		tc.log.Debug("Existing visit #%s", trackRequest.VisitID)
+		tc.Log.Debug("Existing visit #%s", trackRequest.VisitID)
 
 		actionCreator := services.NewActionCreator(&trackRequest)
 
-		err = tc.MongoPool.Collection("action").Insert(&actionCreator.Action)
-		err = tc.MongoPool.Collection("visit").UpdateId(
+		err = tc.MongoDB.C("action").Insert(&actionCreator.Action)
+		err = tc.MongoDB.C("visit").UpdateId(
 			bson.ObjectIdHex(trackRequest.VisitID),
 			bson.M{
 				"$inc": bson.M{"nb_of_actions": 1},
