@@ -1,11 +1,7 @@
 package main
 
 import (
-	"flag"
-	"os"
 	"runtime"
-
-	"github.com/fatih/color"
 
 	"github.com/astaxie/beego"
 	_ "github.com/piotrkowalczuk/gonalytics-tracker/routers"
@@ -19,28 +15,16 @@ type flags struct {
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	var flags = new(flags)
-	flag.Usage = flagUsage
+	runTracker()
 
-	flag.BoolVar(&flags.runTracker, "run:tracker", false, "Run tracker.")
-	flag.Parse()
-
-	if flags.runTracker {
-		runTracker()
-	} else {
-		flag.Usage()
-	}
 }
 
 func runTracker() {
 	services.InitLogger()
 	mongoDB := services.InitMongoDB("mongodb://mongodb/gonalytics")
-	services.InitRepositoryManager(mongoDB)
+	cassandra := services.InitCassandra("gonalytics", []string{"127.0.0.1"})
+	services.InitRepositoryManager(mongoDB, cassandra)
 
+	defer cassandra.Close()
 	beego.Run()
-}
-func flagUsage() {
-	color.Green("Usage of Gonalytics:\n")
-	flag.PrintDefaults()
-	os.Exit(2)
 }
