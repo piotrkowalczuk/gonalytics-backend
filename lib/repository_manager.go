@@ -1,6 +1,6 @@
 package lib
 
-import "github.com/piotrkowalczuk/gonalytics-tracker/repositories"
+import "github.com/piotrkowalczuk/gonalytics-backend/lib/repositories"
 
 // RepositoryManager ...
 type RepositoryManager struct {

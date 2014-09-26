@@ -1,7 +1,7 @@
 FORMAT: 1A
 HOST: http://www.google.com
 
-# Gonalytics-Tracker
+# Gonalytics-Backend
 Notes API is a *short texts saving* service similar to its physical paper presence on your table.
 
 # Group Tracking
@@ -10,7 +10,7 @@ Its main functionalyti of tracker. This route accepts bunch of get params which 
 ### Track [GET]
 + Response 200 (image/gif)
     + Headers
-    
+
             Access-Control-Allow-Credentials: true
             Access-Control-Allow-Origin: http://superbudzik.pl
             Access-Control-Expose-Headers: Gonalytics-Visit-Id
@@ -42,7 +42,7 @@ Its main functionalyti of tracker. This route accepts bunch of get params which 
     + r (optional, string, `http://google.de/`) ... Referrer
     + s.w (required, integer, `1280`) ... Screen width
     + s.h (required, integer, `800`) ... Screen height
-    
+
 # Group Visits
 ## Visits Collection [/visits]
 ### List all visits [GET]
