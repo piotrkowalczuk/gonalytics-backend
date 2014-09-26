@@ -4,7 +4,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/piotrkowalczuk/gonalytics-backend/lib"
-	"github.com/piotrkowalczuk/gonalytics-backend/service"
+	"github.com/piotrkowalczuk/gonalytics-backend/lib/services"
 	"labix.org/v2/mgo"
 )
 
@@ -22,8 +22,8 @@ func (bc *BaseController) Prepare() {
 	bc.Log = logs.NewLogger(10000)
 	bc.Log.SetLogger("console", "")
 	bc.Log.Trace("Http request")
-	bc.RepositoryManager = service.RepositoryManager
-	bc.MongoDB = service.MongoDB
+	bc.RepositoryManager = services.RepositoryManager
+	bc.MongoDB = services.MongoDB
 }
 
 // Finish is called once the basecontrollers method completes

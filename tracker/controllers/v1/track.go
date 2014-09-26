@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
-	"github.com/piotrkowalczuk/gonalytics-backend/service"
+	"github.com/piotrkowalczuk/gonalytics-backend/lib/services"
 	"labix.org/v2/mgo/bson"
 )
 
@@ -71,18 +71,18 @@ func (tc *TrackController) Get() {
 	if trackRequest.IsNewVisit() {
 		tc.Log.Debug("New visit")
 
-		visitCreator := service.NewVisitCreator(&trackRequest)
+		visitCreator := services.NewVisitCreator(&trackRequest)
 		err = tc.MongoDB.C("visit").Insert(&visitCreator.Visit)
 		trackRequest.VisitID = visitCreator.Visit.ID.Hex()
 
-		actionCreator := service.NewActionCreator(&trackRequest)
+		actionCreator := services.NewActionCreator(&trackRequest)
 		err = tc.MongoDB.C("action").Insert(&actionCreator.Action)
 
 		tc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
 	} else {
 		tc.Log.Debug("Existing visit #%s", trackRequest.VisitID)
 
-		actionCreator := service.NewActionCreator(&trackRequest)
+		actionCreator := services.NewActionCreator(&trackRequest)
 
 		err = tc.MongoDB.C("action").Insert(&actionCreator.Action)
 		err = tc.MongoDB.C("visit").UpdateId(
