@@ -6,10 +6,10 @@ import "labix.org/v2/mgo"
 var MongoDB *mgo.Database
 
 // InitMongoDB ...
-func InitMongoDB(connectionString string) *mgo.Database {
+func InitMongoDB(connectionString string) (*mgo.Database, *mgo.Session) {
 	var err error
 
-	session, err := mgo.Dial(connectionString)
+	MongoSession, err := mgo.Dial(connectionString)
 
 	if err != nil {
 		Logger.Error("Connection to MongoDB failed.")
@@ -18,6 +18,6 @@ func InitMongoDB(connectionString string) *mgo.Database {
 
 	Logger.Info("Connection do MongoDB established sucessfully.")
 
-	MongoDB = session.DB("gonalytics")
-	return MongoDB
+	MongoDB = MongoSession.DB("gonalytics")
+	return MongoDB, MongoSession
 }
