@@ -4,8 +4,8 @@ import (
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
 )
 
-// Countryreports its collections of summaries
-type Countryreports struct {
+// CountryReports its collections of summaries
+type CountryReports struct {
 	NbOfreportss int64                      `json:"nbOfreportss" xml:"nbOfreportss"`
 	reportss     map[string]*CountrySummary `json:"reportss" xml:"reportss"`
 }
@@ -22,8 +22,8 @@ type CountrySummary struct {
 }
 
 // NewCountryReportFromVisits creates reports based on collection of visits
-func NewCountryReportFromVisits(visits []*models.Visit) *Countryreports {
-	countryreports := Countryreports{
+func NewCountryReportFromVisits(visits []*models.Visit) *CountryReports {
+	countryreports := CountryReports{
 		NbOfreportss: 0,
 		reportss:     make(map[string]*CountrySummary),
 	}
