@@ -1,8 +1,8 @@
 package services
 
 import (
+	"github.com/gocql/gocql"
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
-	"labix.org/v2/mgo/bson"
 )
 
 // VisitCreator ...
@@ -24,23 +24,21 @@ func NewVisitCreator(trackRequest *models.TrackRequest) *VisitCreator {
 
 func (vc *VisitCreator) createVisit() {
 	vc.Visit = &models.Visit{
-		ID:                  bson.NewObjectId(),
-		IP:                  vc.trackRequest.GetRequestIP(),
-		Referrer:            vc.trackRequest.Referrer,
-		Language:            vc.trackRequest.Language,
-		NbOfActions:         1,
-		SiteID:              vc.trackRequest.SiteID,
-		Location:            vc.createLocation(),
-		Browser:             vc.createBrowser(),
-		FirstPage:           vc.createPage(),
-		LastPage:            vc.createPage(),
-		OperatingSystem:     vc.createOperatingSystem(),
-		Screen:              vc.createScreen(),
-		Device:              vc.createDevice(),
-		FirstActionAt:       vc.trackRequest.MadeAt,
-		FirstActionAtBucket: vc.trackRequest.MadeAtBucket,
-		LastActionAt:        vc.trackRequest.MadeAt,
-		LastActionAtBucket:  vc.trackRequest.MadeAtBucket,
+		ID:          gocql.TimeUUID(),
+		IP:          vc.trackRequest.GetRequestIP(),
+		Referrer:    vc.trackRequest.Referrer,
+		Language:    vc.trackRequest.Language,
+		NbOfActions: 1,
+		SiteID:      vc.trackRequest.SiteID,
+		// Location:            vc.createLocation(),
+		// Browser:             vc.createBrowser(),
+		// FirstPage:           vc.createPage(),
+		// LastPage:            vc.createPage(),
+		// OperatingSystem:     vc.createOperatingSystem(),
+		// Screen:              vc.createScreen(),
+		// Device:              vc.createDevice(),
+		FirstActionAt: vc.trackRequest.MadeAt,
+		LastActionAt:  vc.trackRequest.MadeAt,
 	}
 }
 

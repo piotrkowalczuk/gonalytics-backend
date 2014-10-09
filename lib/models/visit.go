@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"labix.org/v2/mgo/bson"
+	"github.com/gocql/gocql"
 )
 
 const (
@@ -13,25 +13,23 @@ const (
 
 // Visit ...
 type Visit struct {
-	ID                  bson.ObjectId    `json:"id,omitempty" bson:"_id,omitempty"`
-	IP                  string           `json:"ip,omitempty" bson:"ip,omitempty"`
-	NbOfActions         int64            `json:"nbOfActions,omitempty" bson:"nb_of_actions"`
-	SiteID              int64            `json:"siteId,omitempty" bson:"site_id"`
-	Referrer            string           `json:"referrer,omitempty" bson:"referrer"`
-	Language            string           `json:"language,omitempty" bson:"language"`
-	Browser             *Browser         `json:"browser,omitempty" bson:"browser"`
-	Screen              *Screen          `json:"screen,omitempty" bson:"screen"`
-	OperatingSystem     *OperatingSystem `json:"os,omitempty" bson:"os"`
-	Device              *Device          `json:"device,omitempty" bson:"device"`
-	Location            *Location        `json:"location,omitempty" bson:"location"`
-	FirstPage           *Page            `json:"firstPage,omitempty" bson:"first_page"`
-	LastPage            *Page            `json:"lastPage,omitempty" bson:"last_page"`
-	FirstActionAt       *time.Time       `json:"firstActionAt,omitempty" bson:"first_action_at"`
-	FirstActionAtBucket []string         `json:"firstActionAtBucket,omitempty" bson:"first_action_at_bucket"`
-	LastActionAt        *time.Time       `json:"lastActionAt,omitempty" bson:"last_action_at"`
-	LastActionAtBucket  []string         `json:"lastActionAtBucket,omitempty" bson:"last_action_at_bucket"`
+	ID          gocql.UUID `json:"id,omitempty" cql:"id"`
+	IP          string     `json:"ip,omitempty" cql:"ip"`
+	NbOfActions int64      `json:"nbOfActions,omitempty" cql:"nb_of_actions"`
+	SiteID      int64      `json:"siteId,omitempty" cql:"site_id"`
+	Referrer    string     `json:"referrer,omitempty" cql:"referrer"`
+	Language    string     `json:"language,omitempty" cql:"language"`
+	// Browser         *Browser         `json:"browser,omitempty" cql:"browser"`
+	// Screen          *Screen          `json:"screen,omitempty" cql:"screen"`
+	// OperatingSystem *OperatingSystem `json:"os,omitempty" cql:"os"`
+	// Device          *Device          `json:"device,omitempty" cql:"device"`
+	// Location        *Location        `json:"location,omitempty" cql:"location"`
+	// FirstPage       *Page            `json:"firstPage,omitempty" cql:"first_page"`
+	// LastPage        *Page            `json:"lastPage,omitempty" cql:"last_page"`
+	FirstActionAt time.Time `json:"firstActionAt,omitempty" cql:"first_action_at"`
+	LastActionAt  time.Time `json:"lastActionAt,omitempty" cql:"last_action_at"`
 	// Fields not related to database, comes from JOIN's etc.
-	Actions Actions `json:"actions,omitempty" bson:"-"`
+	// Actions Actions `json:"actions,omitempty" cql:"-"`
 }
 
 // Visits ...
@@ -43,7 +41,7 @@ func (v *Visits) Length() int {
 }
 
 // GetIDs ...
-func (v *Visits) GetIDs() (IDs []*bson.ObjectId) {
+func (v *Visits) GetIDs() (IDs []*gocql.UUID) {
 	for _, visit := range *v {
 		IDs = append(IDs, &visit.ID)
 	}
@@ -52,7 +50,7 @@ func (v *Visits) GetIDs() (IDs []*bson.ObjectId) {
 }
 
 // GetByID returns first Visit object with given ID.
-func (v *Visits) GetByID(ID bson.ObjectId) (*Visit, error) {
+func (v *Visits) GetByID(ID gocql.UUID) (*Visit, error) {
 	var err error
 
 	for _, visit := range *v {
@@ -74,7 +72,7 @@ func (v *Visits) VisitsAverageDuration() time.Duration {
 	}
 
 	for _, visit := range *v {
-		overallDuration += visit.LastActionAt.Sub(*visit.FirstActionAt).Nanoseconds()
+		overallDuration += visit.LastActionAt.Sub(visit.FirstActionAt).Nanoseconds()
 	}
 
 	averageDuration = float64(overallDuration) / float64(v.Length())
@@ -113,13 +111,13 @@ func (v *Visits) MapToDistributionByTime() []*AmountInTime {
 func (v *Visits) MapToDistributionByCountryCode() (amount []*AmountInCountry) {
 	distribution := make(map[string]int64)
 
-	for _, visit := range *v {
-		if _, ok := distribution[visit.Location.CountryCode]; ok {
-			distribution[visit.Location.CountryCode]++
-		} else {
-			distribution[visit.Location.CountryCode] = 1
-		}
-	}
+	// for _, visit := range *v {
+	// 	if _, ok := distribution[visit.Location.CountryCode]; ok {
+	// 		distribution[visit.Location.CountryCode]++
+	// 	} else {
+	// 		distribution[visit.Location.CountryCode] = 1
+	// 	}
+	// }
 
 	for countryCode, nbOfVisits := range distribution {
 		visitNumber := &AmountInCountry{

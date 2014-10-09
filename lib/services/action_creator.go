@@ -24,12 +24,11 @@ func NewActionCreator(trackRequest *models.TrackRequest) *ActionCreator {
 
 func (ac *ActionCreator) createAction() {
 	ac.Action = &models.Action{
-		ID:              bson.NewObjectId(),
-		VisitID:         bson.ObjectIdHex(ac.trackRequest.VisitID),
-		Referrer:        ac.trackRequest.Referrer,
-		Page:            ac.createPage(),
-		CreatedAt:       ac.trackRequest.MadeAt,
-		CreatedAtBucket: ac.trackRequest.MadeAtBucket,
+		ID:        bson.NewObjectId(),
+		VisitID:   bson.ObjectIdHex(ac.trackRequest.VisitID),
+		Referrer:  ac.trackRequest.Referrer,
+		Page:      ac.createPage(),
+		CreatedAt: ac.trackRequest.MadeAt,
 	}
 }
 

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
+	"github.com/relops/cqlr"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 )
@@ -19,9 +20,27 @@ func (vr *VisitRepository) Collection() *mgo.Collection {
 	return vr.Repository.MongoDB.C(VisitCollection)
 }
 
+// Insert ...
+func (vr *VisitRepository) Insert(visit *models.Visit) error {
+	cql := `
+	INSERT INTO visits
+	(id, ip, nb_of_actions, site_id, referrer, language, first_action_at, last_action_at)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+
+	return cqlr.Bind(cql, visit).Exec(vr.Repository.Cassandra)
+}
+
 // Find ...
-func (vr *VisitRepository) Find(query bson.M) *mgo.Query {
-	return vr.Collection().Find(query)
+func (vr *VisitRepository) Find(query models.Visit) {
+	// cql := "SELECT text, id, timeline FROM tweet WHERE timeline = ?"
+	// q := cqlr.Bind(cql, query).Query(s)
+	// b := cqlr.BindQuery(q)
+	//
+	// var tw Tweet
+	//
+	// for b.Scan(&tw) {
+	// 	// Do something with the bound data
+	// }
 }
 
 // Count returns number of visit for given date range

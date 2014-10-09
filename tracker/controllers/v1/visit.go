@@ -6,7 +6,6 @@ import (
 
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/services"
-	"labix.org/v2/mgo/bson"
 )
 
 // VisitController ...
@@ -21,9 +20,6 @@ func (vc *VisitController) Get() {
 
 	siteID, err := vc.GetInt("t.sid")
 	vc.AbortIf(err, "Unexpected error.", http.StatusBadRequest)
-
-	now := time.Now()
-	mongoDateNow := models.NewMongoDate(&now)
 
 	deviceIsTablet, _ := vc.GetBool("d.it")
 	deviceIsPhone, _ := vc.GetBool("d.ip")
@@ -64,38 +60,38 @@ func (vc *VisitController) Get() {
 		DeviceIsTablet:         deviceIsTablet,
 		DeviceIsPhone:          deviceIsPhone,
 		DeviceIsMobile:         deviceIsMobile,
-		MadeAt:                 mongoDateNow.DateTime,
-		MadeAtBucket:           mongoDateNow.Bucket,
+		MadeAt:                 time.Now(),
 	}
 
 	if trackRequest.IsNewVisit() {
 		vc.Log.Debug("New visit")
 
-		visivcreator := services.NewVisitCreator(&trackRequest)
-		err = vc.MongoDB.C("visit").Insert(&visivcreator.Visit)
-		trackRequest.VisitID = visivcreator.Visit.ID.Hex()
-
-		actionCreator := services.NewActionCreator(&trackRequest)
-		err = vc.MongoDB.C("action").Insert(&actionCreator.Action)
+		visitCreator := services.NewVisitCreator(&trackRequest)
+		err := vc.RepositoryManager.Visit.Insert(visitCreator.Visit)
+		// err = vc.MongoDB.C("visit").Insert(&visivcreator.Visit)
+		// trackRequest.VisitID = visivcreator.Visit.ID.Hex()
+		//
+		// actionCreator := services.NewActionCreator(&trackRequest)
+		// err = vc.MongoDB.C("action").Insert(&actionCreator.Action)
 
 		vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
 	} else {
 		vc.Log.Debug("Existing visit #%s", trackRequest.VisitID)
 
-		actionCreator := services.NewActionCreator(&trackRequest)
-
-		err = vc.MongoDB.C("action").Insert(&actionCreator.Action)
-		err = vc.MongoDB.C("visit").UpdateId(
-			bson.ObjectIdHex(trackRequest.VisitID),
-			bson.M{
-				"$inc": bson.M{"nb_of_actions": 1},
-				"$set": bson.M{
-					"last_action_at":        trackRequest.MadeAt,
-					"last_action_at_bucket": trackRequest.MadeAtBucket,
-					"last_page":             &actionCreator.Action.Page,
-				},
-			},
-		)
+		// actionCreator := services.NewActionCreator(&trackRequest)
+		//
+		// err = vc.MongoDB.C("action").Insert(&actionCreator.Action)
+		// err = vc.MongoDB.C("visit").UpdateId(
+		// 	bson.ObjectIdHex(trackRequest.VisitID),
+		// 	bson.M{
+		// 		"$inc": bson.M{"nb_of_actions": 1},
+		// 		"$set": bson.M{
+		// 			"last_action_at":        trackRequest.MadeAt,
+		// 			"last_action_at_bucket": trackRequest.MadeAtBucket,
+		// 			"last_page":             &actionCreator.Action.Page,
+		// 		},
+		// 	},
+		// )
 
 		vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
 	}

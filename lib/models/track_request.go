@@ -34,8 +34,7 @@ type TrackRequest struct {
 	DeviceIsTablet         bool
 	DeviceIsPhone          bool
 	DeviceIsMobile         bool
-	MadeAt                 *time.Time
-	MadeAtBucket           []string
+	MadeAt                 time.Time
 }
 
 // GetRequestIP ...
