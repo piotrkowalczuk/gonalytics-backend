@@ -3,6 +3,8 @@ package models
 import (
 	"net"
 	"time"
+
+	"github.com/gocql/gocql"
 )
 
 // TrackRequest ...
@@ -46,5 +48,13 @@ func (tr *TrackRequest) GetRequestIP() string {
 
 // IsNewVisit ...
 func (tr *TrackRequest) IsNewVisit() bool {
-	return len(tr.VisitID) == 0
+	if len(tr.VisitID) == 0 {
+		return true
+	}
+
+	if _, err := gocql.ParseUUID(tr.VisitID); err != nil {
+		return true
+	}
+
+	return false
 }

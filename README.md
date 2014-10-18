@@ -22,10 +22,8 @@ Commands
 
 #### Starting
 
-    go worker - starts worker process
-    go api - starts CRUD API
-    go tracker - starts tracking API (visits, redirects etc)
-    go command <commandName> - starts specified command
+    ./gonalytics-backend tracker - starts tracking API (visits, redirects etc)
+    ./gonalytics-backend help [command] - display help message about available commands
 
 Web API
 --------
@@ -33,6 +31,4 @@ Public API documentation is available at http://docs.gonalyticsbackend.apiary.io
 
 Dependencies
 ------------
-- MongoDB
 - Cassandra
-- RabbitMQ

@@ -1,13 +1,14 @@
 package models
 
+// Browser represents browser information.
 type Browser struct {
-	Name         string  `json:"name" bson:"name"`
-	Version      string  `json:"version" bson:"version"`
-	MajorVersion string  `json:"majorVersion" bson:"major_version"`
-	UserAgent    string  `json:"userAgent" bson:"user_agent"`
-	Platform     string  `json:"platform" bson:"platform"`
-	Cookie       bool    `json:"cookie" bson:"cookie"`
-	Plugins      Plugins `json:"plugins" bson:"plugins"`
-	IsOnline     bool    `json:"isOnline" bson:"is_online"`
-	Window       Window  `json:"window" bson:"window"`
+	Name         string  `json:"name" cql:"name"`
+	Version      string  `json:"version" cql:"version"`
+	MajorVersion string  `json:"majorVersion" cql:"major_version"`
+	UserAgent    string  `json:"userAgent" cql:"user_agent"`
+	Platform     string  `json:"platform" cql:"platform"`
+	Cookie       bool    `json:"cookie" cql:"cookie"`
+	Plugins      Plugins `json:"plugins" cql:"plugins"`
+	IsOnline     bool    `json:"isOnline" cql:"is_online"`
+	Window       Window  `json:"window" cql:"window"`
 }

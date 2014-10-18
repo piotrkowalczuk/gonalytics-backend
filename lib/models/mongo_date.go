@@ -7,8 +7,8 @@ import (
 
 // MongoDate ...
 type MongoDate struct {
-	DateTime *time.Time `json:"dateTime" bson:"date_time"`
-	Bucket   []string   `json:"bucket" bson:"bucket"`
+	DateTime *time.Time `json:"dateTime" cql:"date_time"`
+	Bucket   []string   `json:"bucket" cql:"bucket"`
 }
 
 // NewMongoDate ...

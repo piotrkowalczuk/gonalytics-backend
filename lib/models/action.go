@@ -3,17 +3,16 @@ package models
 import (
 	"time"
 
-	"labix.org/v2/mgo/bson"
+	"github.com/gocql/gocql"
 )
 
 // Action represents single action of visitor.
 type Action struct {
-	ID              bson.ObjectId `json:"id" bson:"_id,omitempty"`
-	VisitID         bson.ObjectId `json:"visitId" bson:"_visitId"`
-	Referrer        string        `json:"referrer" bson:"referrer"`
-	Page            *Page         `json:"page" bson:"page"`
-	CreatedAt       time.Time     `json:"createdAt" bson:"created_at"`
-	CreatedAtBucket []string      `json:"createdAtBucket" bson:"created_at_bucket"`
+	ID        gocql.UUID `json:"id" cql:"id,omitempty"`
+	VisitID   gocql.UUID `json:"visitId" cql:"visit_id"`
+	Referrer  string     `json:"referrer" cql:"referrer"`
+	Page      *Page      `json:"page" cql:"page"`
+	CreatedAt time.Time  `json:"createdAt" cql:"created_at"`
 }
 
 // Actions is a simple wrapper for slice of actions

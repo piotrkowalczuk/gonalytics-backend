@@ -1,11 +1,6 @@
 package repositories
 
-import (
-	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
-	"github.com/relops/cqlr"
-	"labix.org/v2/mgo"
-	"labix.org/v2/mgo/bson"
-)
+import "github.com/piotrkowalczuk/gonalytics-backend/lib/models"
 
 // VisitCollection ...
 const VisitCollection = "visit"
@@ -15,101 +10,117 @@ type VisitRepository struct {
 	Repository
 }
 
-// Collection ...
-func (vr *VisitRepository) Collection() *mgo.Collection {
-	return vr.Repository.MongoDB.C(VisitCollection)
-}
-
 // Insert ...
 func (vr *VisitRepository) Insert(visit *models.Visit) error {
 	cql := `
 	INSERT INTO visits
-	(id, ip, nb_of_actions, site_id, referrer, language, first_action_at, last_action_at)
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+	(
+		id, ip, nb_of_actions, site_id, referrer, language, first_action_at,
+		last_action_at, browser, screen, os, device, location, first_page,
+		last_page
+	)
+	VALUES (
+		?, ?, ?, ?, ?, ?, ?, ?,
+		{
+			name: ?, version: ?, major_version: ?, user_agent: ?, platform: ?,
+			cookie: ?, is_online: ?,
+			window: { width: ?, height: ? },
+			plugins: { java: ? }
+		},
+		{ width: ?, height: ? },
+		{ name: ?, version: ? },
+		{ name: ?, is_mobile: ?, is_tablet: ?, is_phone: ? },
+		{
+			city_name: ?, city_id: ?, country_name: ?, country_code: ?,
+			country_id: ?, continent_name: ?, continent_code: ?, continent_id: ?,
+			latitude: ?, longitude: ?, metro_code: ?, time_zone: ?, postal_code: ?,
+			is_anonymous_proxy: ?, is_satellite_provider: ?
+		},
+		{ title: ?, host: ?, url: ?},
+		{ title: ?, host: ?, url: ?}
+	)`
 
-	return cqlr.Bind(cql, visit).Exec(vr.Repository.Cassandra)
+	return vr.Repository.Cassandra.Query(
+		cql,
+		visit.ID,
+		visit.IP,
+		visit.NbOfActions,
+		visit.SiteID,
+		visit.Referrer,
+		visit.Language,
+		visit.FirstActionAt,
+		visit.LastActionAt,
+		visit.Browser.Name,
+		visit.Browser.Version,
+		visit.Browser.MajorVersion,
+		visit.Browser.UserAgent,
+		visit.Browser.Platform,
+		visit.Browser.Cookie,
+		visit.Browser.IsOnline,
+		visit.Browser.Window.Width,
+		visit.Browser.Window.Height,
+		visit.Browser.Plugins.Java,
+		visit.Screen.Width,
+		visit.Screen.Height,
+		visit.OperatingSystem.Name,
+		visit.OperatingSystem.Version,
+		visit.Device.Name,
+		visit.Device.IsMobile,
+		visit.Device.IsTablet,
+		visit.Device.IsPhone,
+		visit.Location.CityName,
+		visit.Location.CityID,
+		visit.Location.CountryName,
+		visit.Location.CountryCode,
+		visit.Location.CountryID,
+		visit.Location.ContinentName,
+		visit.Location.ContinentCode,
+		visit.Location.ContinentID,
+		visit.Location.Latitude,
+		visit.Location.Longitude,
+		visit.Location.MetroCode,
+		visit.Location.TimeZone,
+		visit.Location.PostalCode,
+		visit.Location.IsAnonymousProxy,
+		visit.Location.IsSatelliteProvider,
+		visit.FirstPage.Title,
+		visit.FirstPage.Host,
+		visit.FirstPage.URL,
+		visit.LastPage.Title,
+		visit.LastPage.Host,
+		visit.LastPage.URL,
+	).Exec()
 }
 
-// Find ...
-func (vr *VisitRepository) Find(query models.Visit) {
-	// cql := "SELECT text, id, timeline FROM tweet WHERE timeline = ?"
-	// q := cqlr.Bind(cql, query).Query(s)
-	// b := cqlr.BindQuery(q)
-	//
-	// var tw Tweet
-	//
-	// for b.Scan(&tw) {
-	// 	// Do something with the bound data
-	// }
-}
-
-// Count returns number of visit for given date range
-func (vr *VisitRepository) Count(dateTimeRange string) (int64, error) {
-	nbOfVisits, err := vr.Collection().
-		Find(bson.M{"last_action_at_bucket": dateTimeRange}).
-		Count()
-
-	return int64(nbOfVisits), err
-}
-
-// CountByCountryID returns number of countries that user visit from
-// for given date range
-func (vr *VisitRepository) CountByCountryID(dateTimeRange string) (int64, error) {
-	var result = struct {
-		NbOfCountries int64 `bson:"nb_of_countries"`
-	}{NbOfCountries: 0}
-
-	pipeline := []bson.M{
-		{"$match": bson.M{"last_action_at_bucket": dateTimeRange}},
-		{"$group": bson.M{"_id": "$location.country_id"}},
-		{"$group": bson.M{
-			"_id":             0,
-			"nb_of_countries": bson.M{"$sum": 1}}},
-		{"$project": bson.M{
-			"_id":             0,
-			"nb_of_countries": 1,
-		}},
-	}
-
-	iter := vr.Collection().Pipe(pipeline).Iter()
-	iter.Next(&result)
-
-	if iter.Err() != nil {
-		return 0, iter.Err()
-	}
-	return result.NbOfCountries, nil
-}
-
-// DistributionByTime returns number of visits grouped by hours
-func (vr *VisitRepository) DistributionByTime(dateTimeRange string) ([]*models.AmountInTime, error) {
-	var visits models.Visits
-
-	err := vr.Collection().Find(bson.M{
-		"first_action_at_bucket": dateTimeRange},
-	).Select(bson.M{
-		"first_action_at": 1,
-	}).All(&visits)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return visits.MapToDistributionByTime(), nil
-}
-
-// DistributionByCountry returns number of visits grouped by country ID
-func (vr *VisitRepository) DistributionByCountry(dateTimeRange string) ([]*models.AmountInCountry, error) {
-	var visits models.Visits
-
-	err := vr.Collection().Find(bson.M{
-		"first_action_at_bucket": dateTimeRange,
-	}).Select(bson.M{
-		"location": 1,
-	}).All(&visits)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return visits.MapToDistributionByCountryCode(), nil
+// AddAction adds new action to existing map.
+func (vr *VisitRepository) AddAction(action *models.Action) error {
+	cql := `
+		UPDATE visits SET
+			actions[?] = {
+				id: ?,
+				visit_id: ?,
+				referrer: ?,
+				page: { title: ?, host: ?, url: ? },
+				created_at: ?
+			},
+			last_action_at = ?,
+			last_page = { title: ?, host: ?, url: ? }
+		WHERE id = ?
+	`
+	return vr.Repository.Cassandra.Query(
+		cql,
+		action.CreatedAt,
+		action.ID,
+		action.VisitID,
+		action.Referrer,
+		action.Page.Title,
+		action.Page.Host,
+		action.Page.URL,
+		action.CreatedAt,
+		action.CreatedAt,
+		action.Page.Title,
+		action.Page.Host,
+		action.Page.URL,
+		action.VisitID,
+	).Exec()
 }

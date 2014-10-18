@@ -1,6 +1,6 @@
 package models
 
 type OperatingSystem struct {
-	Name    string `json:"name" bson:"name"`
-	Version string `json:"version" bson:"version"`
+	Name    string `json:"name" cql:"name"`
+	Version string `json:"version" cql:"version"`
 }

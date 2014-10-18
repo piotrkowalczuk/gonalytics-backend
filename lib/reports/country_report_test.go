@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"labix.org/v2/mgo/bson"
+	"labix.org/v2/mgo/cql"
 )
 
 func generateVisists(nbOfVisits int) []*Visit {
@@ -22,7 +22,7 @@ func generateVisists(nbOfVisits int) []*Visit {
 		}
 
 		action := Action{
-			Id:              bson.NewObjectId(),
+			Id:              cql.NewObjectId(),
 			Referrer:        "r",
 			Page:            &page,
 			CreatedAt:       mongoDateNow.DateTime,
@@ -73,7 +73,7 @@ func generateVisists(nbOfVisits int) []*Visit {
 		}
 
 		visit := Visit{
-			Id:                  bson.NewObjectId(),
+			Id:                  cql.NewObjectId(),
 			Referrer:            "r",
 			Language:            "lng",
 			Actions:             []*Action{&action},

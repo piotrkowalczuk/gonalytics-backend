@@ -13,23 +13,22 @@ const (
 
 // Visit ...
 type Visit struct {
-	ID          gocql.UUID `json:"id,omitempty" cql:"id"`
-	IP          string     `json:"ip,omitempty" cql:"ip"`
-	NbOfActions int64      `json:"nbOfActions,omitempty" cql:"nb_of_actions"`
-	SiteID      int64      `json:"siteId,omitempty" cql:"site_id"`
-	Referrer    string     `json:"referrer,omitempty" cql:"referrer"`
-	Language    string     `json:"language,omitempty" cql:"language"`
-	// Browser         *Browser         `json:"browser,omitempty" cql:"browser"`
-	// Screen          *Screen          `json:"screen,omitempty" cql:"screen"`
-	// OperatingSystem *OperatingSystem `json:"os,omitempty" cql:"os"`
-	// Device          *Device          `json:"device,omitempty" cql:"device"`
-	// Location        *Location        `json:"location,omitempty" cql:"location"`
-	// FirstPage       *Page            `json:"firstPage,omitempty" cql:"first_page"`
-	// LastPage        *Page            `json:"lastPage,omitempty" cql:"last_page"`
-	FirstActionAt time.Time `json:"firstActionAt,omitempty" cql:"first_action_at"`
-	LastActionAt  time.Time `json:"lastActionAt,omitempty" cql:"last_action_at"`
-	// Fields not related to database, comes from JOIN's etc.
-	// Actions Actions `json:"actions,omitempty" cql:"-"`
+	ID              gocql.UUID       `json:"id,omitempty" cql:"id"`
+	IP              string           `json:"ip,omitempty" cql:"ip"`
+	Actions         []*Actions       `json:"actions,omitempty" cql:"actions"`
+	NbOfActions     int64            `json:"nbOfActions,omitempty" cql:"nb_of_actions"`
+	SiteID          int64            `json:"siteId,omitempty" cql:"site_id"`
+	Referrer        string           `json:"referrer,omitempty" cql:"referrer"`
+	Language        string           `json:"language,omitempty" cql:"language"`
+	Browser         *Browser         `json:"browser,omitempty" cql:"browser"`
+	Screen          *Screen          `json:"screen,omitempty" cql:"screen"`
+	OperatingSystem *OperatingSystem `json:"os,omitempty" cql:"os"`
+	Device          *Device          `json:"device,omitempty" cql:"device"`
+	Location        *Location        `json:"location,omitempty" cql:"location"`
+	FirstPage       *Page            `json:"firstPage,omitempty" cql:"first_page"`
+	LastPage        *Page            `json:"lastPage,omitempty" cql:"last_page"`
+	FirstActionAt   time.Time        `json:"firstActionAt,omitempty" cql:"first_action_at"`
+	LastActionAt    time.Time        `json:"lastActionAt,omitempty" cql:"last_action_at"`
 }
 
 // Visits ...

@@ -17,12 +17,10 @@ func NewRunTrackerCommand() *cobra.Command {
 		Long:  "Tracker is a thin layer between HTTP world and queue.",
 		Run: func(cmd *cobra.Command, args []string) {
 			services.InitLogger()
-			mongoDB, mongoSession := services.InitMongoDB("mongodb://mongodb/gonalytics")
 			cassandra := services.InitCassandra("gonalytics", []string{"127.0.0.1"})
-			services.InitRepositoryManager(mongoDB, cassandra)
+			services.InitRepositoryManager(cassandra)
 
 			defer cassandra.Close()
-			defer mongoSession.Close()
 
 			beego.AddNamespace(routers.GetNamespaceV1())
 			beego.Run(address)

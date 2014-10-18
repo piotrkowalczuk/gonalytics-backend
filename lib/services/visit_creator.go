@@ -24,21 +24,21 @@ func NewVisitCreator(trackRequest *models.TrackRequest) *VisitCreator {
 
 func (vc *VisitCreator) createVisit() {
 	vc.Visit = &models.Visit{
-		ID:          gocql.TimeUUID(),
-		IP:          vc.trackRequest.GetRequestIP(),
-		Referrer:    vc.trackRequest.Referrer,
-		Language:    vc.trackRequest.Language,
-		NbOfActions: 1,
-		SiteID:      vc.trackRequest.SiteID,
-		// Location:            vc.createLocation(),
-		// Browser:             vc.createBrowser(),
-		// FirstPage:           vc.createPage(),
-		// LastPage:            vc.createPage(),
-		// OperatingSystem:     vc.createOperatingSystem(),
-		// Screen:              vc.createScreen(),
-		// Device:              vc.createDevice(),
-		FirstActionAt: vc.trackRequest.MadeAt,
-		LastActionAt:  vc.trackRequest.MadeAt,
+		ID:              gocql.TimeUUID(),
+		IP:              vc.trackRequest.GetRequestIP(),
+		Referrer:        vc.trackRequest.Referrer,
+		Language:        vc.trackRequest.Language,
+		NbOfActions:     1,
+		SiteID:          vc.trackRequest.SiteID,
+		Location:        vc.createLocation(),
+		Browser:         vc.createBrowser(),
+		FirstPage:       vc.createPage(),
+		LastPage:        vc.createPage(),
+		OperatingSystem: vc.createOperatingSystem(),
+		Screen:          vc.createScreen(),
+		Device:          vc.createDevice(),
+		FirstActionAt:   vc.trackRequest.MadeAt,
+		LastActionAt:    vc.trackRequest.MadeAt,
 	}
 }
 
@@ -106,6 +106,6 @@ func (vc *VisitCreator) createPage() *models.Page {
 	return &models.Page{
 		Title: vc.trackRequest.PageTitle,
 		Host:  vc.trackRequest.PageHost,
-		Url:   vc.trackRequest.PageURL,
+		URL:   vc.trackRequest.PageURL,
 	}
 }

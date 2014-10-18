@@ -64,37 +64,23 @@ func (vc *VisitController) Get() {
 	}
 
 	if trackRequest.IsNewVisit() {
-		vc.Log.Debug("New visit")
-
 		visitCreator := services.NewVisitCreator(&trackRequest)
 		err := vc.RepositoryManager.Visit.Insert(visitCreator.Visit)
-		// err = vc.MongoDB.C("visit").Insert(&visivcreator.Visit)
-		// trackRequest.VisitID = visivcreator.Visit.ID.Hex()
-		//
-		// actionCreator := services.NewActionCreator(&trackRequest)
-		// err = vc.MongoDB.C("action").Insert(&actionCreator.Action)
-
 		vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
+
+		trackRequest.VisitID = visitCreator.Visit.ID.String()
+		vc.Log.Trace("First action in visit: %s", trackRequest.VisitID)
 	} else {
-		vc.Log.Debug("Existing visit #%s", trackRequest.VisitID)
-
-		// actionCreator := services.NewActionCreator(&trackRequest)
-		//
-		// err = vc.MongoDB.C("action").Insert(&actionCreator.Action)
-		// err = vc.MongoDB.C("visit").UpdateId(
-		// 	bson.ObjectIdHex(trackRequest.VisitID),
-		// 	bson.M{
-		// 		"$inc": bson.M{"nb_of_actions": 1},
-		// 		"$set": bson.M{
-		// 			"last_action_at":        trackRequest.MadeAt,
-		// 			"last_action_at_bucket": trackRequest.MadeAtBucket,
-		// 			"last_page":             &actionCreator.Action.Page,
-		// 		},
-		// 	},
-		// )
-
-		vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
+		vc.Log.Trace("Next action in visit: %s", trackRequest.VisitID)
 	}
+
+	vc.Log.Trace("Page URL: %s", trackRequest.PageURL)
+
+	actionCreator, err := services.NewActionCreator(&trackRequest)
+	vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
+
+	err = vc.RepositoryManager.Visit.AddAction(actionCreator.Action)
+	vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
 
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Expose-Headers", "Gonalytics-Visit-Id")

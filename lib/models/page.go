@@ -1,7 +1,8 @@
 package models
 
+// Page represents page information
 type Page struct {
-	Title string `json:"title" bson:"title"`
-	Host  string `json:"host" bson:"host"`
-	Url   string `json:"url" bson:"url"`
+	Title string `json:"title" cql:"title"`
+	Host  string `json:"host" cql:"host"`
+	URL   string `json:"url" cql:"url"`
 }
