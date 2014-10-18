@@ -4,7 +4,7 @@ import (
 	"github.com/astaxie/beego/logs"
 )
 
-// Instance of Beego logger
+// Singleton instance of logger
 var Logger *logs.BeeLogger
 
 // InitLogger ...

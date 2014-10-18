@@ -1,36 +1,43 @@
-package services
+package lib
 
 import (
+	"net"
+
 	"github.com/gocql/gocql"
+	geoip2 "github.com/oschwald/geoip2-golang"
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
 )
 
 // VisitCreator ...
 type VisitCreator struct {
+	geoIP        *geoip2.Reader
 	trackRequest *models.TrackRequest
-	Visit        *models.Visit
 }
 
 // NewVisitCreator ...
-func NewVisitCreator(trackRequest *models.TrackRequest) *VisitCreator {
-	vc := VisitCreator{
-		trackRequest: trackRequest,
+func NewVisitCreator(geoIP *geoip2.Reader) *VisitCreator {
+	return &VisitCreator{
+		geoIP: geoIP,
 	}
-
-	vc.createVisit()
-
-	return &vc
 }
 
-func (vc *VisitCreator) createVisit() {
-	vc.Visit = &models.Visit{
+// Create creates visit object based on given track request.
+func (vc *VisitCreator) Create(trackRequest *models.TrackRequest) (*models.Visit, error) {
+	vc.trackRequest = trackRequest
+	location, err := vc.createLocation()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.Visit{
 		ID:              gocql.TimeUUID(),
 		IP:              vc.trackRequest.GetRequestIP(),
 		Referrer:        vc.trackRequest.Referrer,
 		Language:        vc.trackRequest.Language,
 		NbOfActions:     1,
 		SiteID:          vc.trackRequest.SiteID,
-		Location:        vc.createLocation(),
+		Location:        location,
 		Browser:         vc.createBrowser(),
 		FirstPage:       vc.createPage(),
 		LastPage:        vc.createPage(),
@@ -39,7 +46,7 @@ func (vc *VisitCreator) createVisit() {
 		Device:          vc.createDevice(),
 		FirstActionAt:   vc.trackRequest.MadeAt,
 		LastActionAt:    vc.trackRequest.MadeAt,
-	}
+	}, nil
 }
 
 func (vc *VisitCreator) createBrowser() *models.Browser {
@@ -90,16 +97,15 @@ func (vc *VisitCreator) createDevice() *models.Device {
 	}
 }
 
-func (vc *VisitCreator) createLocation() *models.Location {
-	//geoLocation, err := NewGeoLocation(vc.trackRequest.GetRequestIP())
-	geoLocation, err := NewGeoLocation("78.52.240.125")
+func (vc *VisitCreator) createLocation() (*models.Location, error) {
+	// geoLocation, err := geoIP.City(net.ParseIP(vc.trackRequest.GetRequestIP()))
+	geoLocation, err := vc.geoIP.City(net.ParseIP("78.52.240.125"))
 
-	location := &models.Location{}
-	if err == nil {
-		location = models.NewLocationFromGeoIP(geoLocation.Location)
+	if err != nil {
+		return nil, err
 	}
 
-	return location
+	return models.NewLocationFromGeoIP(geoLocation), nil
 }
 
 func (vc *VisitCreator) createPage() *models.Page {

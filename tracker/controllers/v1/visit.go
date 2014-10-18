@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/piotrkowalczuk/gonalytics-backend/lib"
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
-	"github.com/piotrkowalczuk/gonalytics-backend/lib/services"
+	"github.com/piotrkowalczuk/gonalytics-backend/services"
 )
 
 // VisitController ...
@@ -64,11 +65,14 @@ func (vc *VisitController) Get() {
 	}
 
 	if trackRequest.IsNewVisit() {
-		visitCreator := services.NewVisitCreator(&trackRequest)
-		err := vc.RepositoryManager.Visit.Insert(visitCreator.Visit)
+		visitCreator := lib.NewVisitCreator(services.GeoIP)
+		visit, err := visitCreator.Create(&trackRequest)
 		vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
 
-		trackRequest.VisitID = visitCreator.Visit.ID.String()
+		err = vc.RepositoryManager.Visit.Insert(visit)
+		vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
+
+		trackRequest.VisitID = visit.ID.String()
 		vc.Log.Trace("First action in visit: %s", trackRequest.VisitID)
 	} else {
 		vc.Log.Trace("Next action in visit: %s", trackRequest.VisitID)
@@ -76,10 +80,11 @@ func (vc *VisitController) Get() {
 
 	vc.Log.Trace("Page URL: %s", trackRequest.PageURL)
 
-	actionCreator, err := services.NewActionCreator(&trackRequest)
+	actionCreator := lib.NewActionCreator()
+	action, err := actionCreator.Create(&trackRequest)
 	vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
 
-	err = vc.RepositoryManager.Visit.AddAction(actionCreator.Action)
+	err = vc.RepositoryManager.Visit.AddAction(action)
 	vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
 
 	w.Header().Set("Access-Control-Allow-Credentials", "true")

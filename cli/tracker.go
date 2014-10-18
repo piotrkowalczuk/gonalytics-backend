@@ -2,7 +2,7 @@ package cli
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/piotrkowalczuk/gonalytics-backend/lib/services"
+	"github.com/piotrkowalczuk/gonalytics-backend/services"
 	"github.com/piotrkowalczuk/gonalytics-backend/tracker/routers"
 	"github.com/spf13/cobra"
 )
@@ -17,10 +17,12 @@ func NewRunTrackerCommand() *cobra.Command {
 		Long:  "Tracker is a thin layer between HTTP world and queue.",
 		Run: func(cmd *cobra.Command, args []string) {
 			services.InitLogger()
-			cassandra := services.InitCassandra("gonalytics", []string{"127.0.0.1"})
-			services.InitRepositoryManager(cassandra)
+			services.InitGeoIP("./data/GeoLite2-City.mmdb")
+			services.InitCassandra("gonalytics", []string{"127.0.0.1"})
+			services.InitRepositoryManager(services.Cassandra)
 
-			defer cassandra.Close()
+			defer services.GeoIP.Close()
+			defer services.Cassandra.Close()
 
 			beego.AddNamespace(routers.GetNamespaceV1())
 			beego.Run(address)

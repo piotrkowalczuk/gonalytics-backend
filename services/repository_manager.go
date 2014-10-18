@@ -6,16 +6,18 @@ import (
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/repositories"
 )
 
-// RepositoryManager ...
+// Singleton instance of RepositoryManager.
 var RepositoryManager lib.RepositoryManager
 
 // InitRepositoryManager ...
-func InitRepositoryManager(Cassandra *gocql.Session) {
+func InitRepositoryManager(cassandra *gocql.Session) {
 	repository := repositories.Repository{
-		Cassandra: Cassandra,
+		Cassandra: cassandra,
 	}
 
 	RepositoryManager = lib.RepositoryManager{
-		Visit: repositories.VisitRepository{repository},
+		Visit: repositories.VisitRepository{
+			Repository: repository,
+		},
 	}
 }

@@ -1,12 +1,8 @@
 package repositories
 
-import (
-	"github.com/gocql/gocql"
-	"labix.org/v2/mgo"
-)
+import "github.com/gocql/gocql"
 
 // Repository ...
 type Repository struct {
-	MongoDB   *mgo.Database
 	Cassandra *gocql.Session
 }

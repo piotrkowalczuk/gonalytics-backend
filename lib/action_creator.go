@@ -1,4 +1,4 @@
-package services
+package lib
 
 import (
 	"github.com/gocql/gocql"
@@ -8,38 +8,29 @@ import (
 // ActionCreator ...
 type ActionCreator struct {
 	trackRequest *models.TrackRequest
-	Action       *models.Action
 }
 
 // NewActionCreator ...
-func NewActionCreator(trackRequest *models.TrackRequest) (*ActionCreator, error) {
-	ac := ActionCreator{
-		trackRequest: trackRequest,
-	}
-
-	if err := ac.createAction(); err != nil {
-		return nil, err
-	}
-
-	return &ac, nil
+func NewActionCreator() *ActionCreator {
+	return &ActionCreator{}
 }
 
-func (ac *ActionCreator) createAction() error {
+// Create ...
+func (ac *ActionCreator) Create(trackRequest *models.TrackRequest) (*models.Action, error) {
+	ac.trackRequest = trackRequest
 	visitID, err := gocql.ParseUUID(ac.trackRequest.VisitID)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	ac.Action = &models.Action{
+	return &models.Action{
 		ID:        gocql.TimeUUID(),
 		VisitID:   visitID,
 		Referrer:  ac.trackRequest.Referrer,
 		Page:      ac.createPage(),
 		CreatedAt: ac.trackRequest.MadeAt,
-	}
-
-	return nil
+	}, nil
 }
 
 func (ac *ActionCreator) createPage() *models.Page {
