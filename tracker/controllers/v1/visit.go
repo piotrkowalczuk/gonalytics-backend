@@ -64,6 +64,8 @@ func (vc *VisitController) Get() {
 		MadeAt:                 time.Now(),
 	}
 
+	isNewVisit := trackRequest.IsNewVisit()
+
 	actionCreator := lib.NewActionCreator(services.GeoIP)
 	action, err := actionCreator.Create(&trackRequest)
 	vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
@@ -73,7 +75,7 @@ func (vc *VisitController) Get() {
 
 	trackRequest.VisitID = action.VisitID.String()
 
-	if trackRequest.IsNewVisit() {
+	if isNewVisit {
 		vc.Log.Trace("First action in visit: %s", trackRequest.VisitID)
 	} else {
 		vc.Log.Trace("Next action in visit: %s", trackRequest.VisitID)
