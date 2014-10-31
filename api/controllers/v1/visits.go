@@ -4,32 +4,20 @@ import (
 	"net/http"
 
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
-	"labix.org/v2/mgo/bson"
 )
 
-// VisitsController ...
+// VisitsLiveController ...
 type VisitsController struct {
-	GeneralController
+	BaseListController
 }
 
-// Get ..
-func (vc *VisitsController) Get() {
+// Get ...
+func (vlc *VisitsController) Get() {
 	visits := models.Visits{}
-	dateTimeRange := vc.GetString("dateTimeRange")
+	actions := models.Actions{}
 
-	query := bson.M{}
+	visits, err := vlc.RepositoryManager.Visit.Find()
 
-	if dateTimeRange != "" {
-		query["first_action_at_bucket"] = dateTimeRange
-	}
-
-	err := vc.RepositoryManager.Visit.
-		Find(query).
-		Select(vc.GetQuerySelect()).
-		Skip(vc.GetQuerySkip()).
-		Limit(vc.GetQueryLimit()).
-		All(&visits)
-
-	vc.AbortIf(err, "Unexpected error", http.StatusInternalServerError)
-	vc.ResponseData = &visits
+	vlc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
+	vlc.ResponseData = &visits
 }

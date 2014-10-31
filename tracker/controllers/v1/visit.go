@@ -64,28 +64,22 @@ func (vc *VisitController) Get() {
 		MadeAt:                 time.Now(),
 	}
 
+	actionCreator := lib.NewActionCreator(services.GeoIP)
+	action, err := actionCreator.Create(&trackRequest)
+	vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
+
+	err = vc.RepositoryManager.Action.Insert(action)
+	vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
+
+	trackRequest.VisitID = action.VisitID.String()
+
 	if trackRequest.IsNewVisit() {
-		visitCreator := lib.NewVisitCreator(services.GeoIP)
-		visit, err := visitCreator.Create(&trackRequest)
-		vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
-
-		err = vc.RepositoryManager.Visit.Insert(visit)
-		vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
-
-		trackRequest.VisitID = visit.ID.String()
 		vc.Log.Trace("First action in visit: %s", trackRequest.VisitID)
 	} else {
 		vc.Log.Trace("Next action in visit: %s", trackRequest.VisitID)
 	}
 
 	vc.Log.Trace("Page URL: %s", trackRequest.PageURL)
-
-	actionCreator := lib.NewActionCreator()
-	action, err := actionCreator.Create(&trackRequest)
-	vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
-
-	err = vc.RepositoryManager.Visit.AddAction(action)
-	vc.AbortIf(err, "Unexpected error.", http.StatusInternalServerError)
 
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Expose-Headers", "Gonalytics-Visit-Id")

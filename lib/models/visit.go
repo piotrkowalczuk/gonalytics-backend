@@ -15,7 +15,6 @@ const (
 type Visit struct {
 	ID              gocql.UUID       `json:"id,omitempty" cql:"id"`
 	IP              string           `json:"ip,omitempty" cql:"ip"`
-	Actions         []*Actions       `json:"actions,omitempty" cql:"actions"`
 	NbOfActions     int64            `json:"nbOfActions,omitempty" cql:"nb_of_actions"`
 	SiteID          int64            `json:"siteId,omitempty" cql:"site_id"`
 	Referrer        string           `json:"referrer,omitempty" cql:"referrer"`

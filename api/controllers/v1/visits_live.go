@@ -5,12 +5,11 @@ import (
 	"time"
 
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
-	"labix.org/v2/mgo/bson"
 )
 
 // VisitsLiveController ...
 type VisitsLiveController struct {
-	GeneralController
+	BaseListController
 }
 
 // Get ...
@@ -21,12 +20,12 @@ func (vlc *VisitsLiveController) Get() {
 
 	vlc.AbortIf(err, "Missing limit parameter.", http.StatusBadRequest)
 
-	err = vlc.RepositoryManager.Visit.Find(bson.M{
-		"last_action_at": bson.M{"$gt": time.Now().Add(-models.MinVisitDuration)},
+	err = vlc.RepositoryManager.Visit.Find(cql.M{
+		"last_action_at": cql.M{"$gt": time.Now().Add(-models.MinVisitDuration)},
 	}).Sort("-last_action_at").Limit(int(limit)).All(&visits)
 
-	vlc.RepositoryManager.Action.Find(bson.M{
-		"_visitId": bson.M{"$in": visits.GetIDs()},
+	vlc.RepositoryManager.Action.Find(cql.M{
+		"_visitId": cql.M{"$in": visits.GetIDs()},
 	}).All(&actions)
 
 	for _, action := range actions {
