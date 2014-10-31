@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS gonalytics.actions
     id timeuuid,
     visit_id timeuuid,
     ip varchar,
-    nb_of_actions bigint,
     site_id bigint,
     referrer varchar,
     language varchar,
