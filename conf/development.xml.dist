@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <server>
+        <host>127.0.0.1</host>
+        <port>8900</port>
+    </server>
+    <logger>
+        <nbOfChannels>10000</nbOfChannels>
+        <adapter>console</adapter>
+        <settings></settings>
+    </logger>
+    <geoIP>
+        <path>data/GeoLite2-City.mmdb</path>
+    </geoIP>
+    <rabbitMQ>
+        <connectionString>amqp://rabbitmq</connectionString>
+    </rabbitMQ>
+    <cassandra>
+        <keyspace>gonalytics</keyspace>
+        <hosts>
+            <host>127.0.0.1</host>
+        </hosts>
+    </cassandra>
+</config>

@@ -53,5 +53,7 @@ CREATE TABLE IF NOT EXISTS gonalytics.actions
     page_title varchar,
     page_host varchar,
     page_url varchar,
-    PRIMARY KEY (id),
-) WITH comment='Column family contains actions.';
+    PRIMARY KEY (id, visit_id),
+)
+WITH CLUSTERING ORDER BY (visit_id DESC)
+AND comment='Column family contains actions.';

@@ -1,14 +1,17 @@
 package services
 
-import "github.com/gocql/gocql"
+import (
+	"github.com/gocql/gocql"
+	"github.com/piotrkowalczuk/gonalytics-backend/lib"
+)
 
 // Singleton instance of cassandra session.
 var Cassandra *gocql.Session
 
 // InitCassandra ...
-func InitCassandra(keyspace string, addresses []string) *gocql.Session {
-	cluster := gocql.NewCluster(addresses...)
-	cluster.Keyspace = keyspace
+func InitCassandra(config lib.CassandraConfig) {
+	cluster := gocql.NewCluster(config.GetHosts()...)
+	cluster.Keyspace = config.Keyspace
 	cluster.Consistency = gocql.Quorum
 	cassandra, err := cluster.CreateSession()
 
@@ -20,5 +23,4 @@ func InitCassandra(keyspace string, addresses []string) *gocql.Session {
 	Logger.Info("Connection do Cassandra established sucessfully.")
 
 	Cassandra = cassandra
-	return cassandra
 }

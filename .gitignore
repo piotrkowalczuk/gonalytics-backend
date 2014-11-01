@@ -1,3 +1,8 @@
 gonalytics-backend
 conf/app.conf
 .idea
+conf/development.xml
+conf/production.xml
+conf/testing.xml
+conf/staging.xml
+gin-bin

@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	// ActionCollection ...
-	ActionCollection = "actions"
-	allFields        = `
+	// ActionColumnFamily ...
+	ActionColumnFamily = "actions"
+	allFields          = `
 		id, ip, visit_id, site_id, referrer, language, browser_name,
 		browser_version, browser_major_version, browser_user_agent,
 		browser_platform, browser_cookie, browser_plugin_java, browser_is_online,
@@ -33,7 +33,7 @@ type ActionRepository struct {
 // Insert ...
 func (ar *ActionRepository) Insert(action *models.ActionEntity) error {
 	cql := `
-	INSERT INTO actions
+	INSERT INTO ` + ActionColumnFamily + `
 	(
 		` + allFields + `
 	)
@@ -43,61 +43,11 @@ func (ar *ActionRepository) Insert(action *models.ActionEntity) error {
 	)`
 
 	return cqlr.Bind(cql, action).Exec(ar.Repository.Cassandra)
-	// return vr.Repository.Cassandra.Query(
-	// 	cql,
-	// 	visit.ID,
-	// 	visit.IP,
-	// 	visit.NbOfActions,
-	// 	visit.SiteID,
-	// 	visit.Referrer,
-	// 	visit.Language,
-	// 	visit.FirstActionAt,
-	// 	visit.LastActionAt,
-	// 	visit.Browser.Name,
-	// 	visit.Browser.Version,
-	// 	visit.Browser.MajorVersion,
-	// 	visit.Browser.UserAgent,
-	// 	visit.Browser.Platform,
-	// 	visit.Browser.Cookie,
-	// 	visit.Browser.IsOnline,
-	// 	visit.Browser.Window.Width,
-	// 	visit.Browser.Window.Height,
-	// 	visit.Browser.Plugins.Java,
-	// 	visit.Screen.Width,
-	// 	visit.Screen.Height,
-	// 	visit.OperatingSystem.Name,
-	// 	visit.OperatingSystem.Version,
-	// 	visit.Device.Name,
-	// 	visit.Device.IsMobile,
-	// 	visit.Device.IsTablet,
-	// 	visit.Device.IsPhone,
-	// 	visit.Location.CityName,
-	// 	visit.Location.CityID,
-	// 	visit.Location.CountryName,
-	// 	visit.Location.CountryCode,
-	// 	visit.Location.CountryID,
-	// 	visit.Location.ContinentName,
-	// 	visit.Location.ContinentCode,
-	// 	visit.Location.ContinentID,
-	// 	visit.Location.Latitude,
-	// 	visit.Location.Longitude,
-	// 	visit.Location.MetroCode,
-	// 	visit.Location.TimeZone,
-	// 	visit.Location.PostalCode,
-	// 	visit.Location.IsAnonymousProxy,
-	// 	visit.Location.IsSatelliteProvider,
-	// 	visit.FirstPage.Title,
-	// 	visit.FirstPage.Host,
-	// 	visit.FirstPage.URL,
-	// 	visit.LastPage.Title,
-	// 	visit.LastPage.Host,
-	// 	visit.LastPage.URL,
-	// ).Exec()
 }
 
 // Find ...
 func (ar *ActionRepository) Find() ([]*models.ActionEntity, error) {
-	cql := `SELECT ` + allFields + ` FROM  actions`
+	cql := `SELECT ` + allFields + ` FROM ` + ActionColumnFamily
 
 	query := ar.Repository.Cassandra.Query(cql, "me").Consistency(gocql.One)
 
