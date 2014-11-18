@@ -1,13 +1,14 @@
 package routers
 
 import (
-	"github.com/astaxie/beego"
-	"github.com/piotrkowalczuk/gonalytics-backend/tracker/controllers/v1"
+	"github.com/gocraft/web"
+	CtrlV1 "github.com/piotrkowalczuk/gonalytics-backend/tracker/controllers/v1"
+	"github.com/piotrkowalczuk/gonalytics-backend/tracker/middleware"
 )
 
-// GetNamespaceV1 ...
-func GetNamespaceV1() *beego.Namespace {
-	return beego.NewNamespace("/v1",
-		beego.NSRouter("/visit", &v1.VisitController{}),
-	)
+func GetRouterV1() *web.Router {
+	return web.New(CtrlV1.BaseContext{}).
+		Middleware(middleware.ExecutionDurationMiddleware).
+		Middleware(middleware.InjectServicesMiddleware).
+		Get("/v1/visit", (*CtrlV1.BaseContext).VisitsGETHandler)
 }

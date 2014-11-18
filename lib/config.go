@@ -1,12 +1,32 @@
 package lib
 
-// Config ...
+const (
+	APIConfigConsumer           = "api"
+	TrackerConfigConsumer       = "tracker"
+	ActionsWorkerConfigConsumer = "worker/actions"
+)
+
 type Config struct {
 	Server    ServerConfig    `xml:"server"`
 	Logger    LoggerConfig    `xml:"logger"`
 	Cassandra CassandraConfig `xml:"cassandra"`
 	GeoIP     GeoIPConfig     `xml:"geo-ip"`
 	RabbitMQ  RabbitMQConfig  `xml:"rabbit-mq"`
+}
+
+// APIConfig ...
+type APIConfig struct {
+	Config
+}
+
+// TrackerConfig ...
+type TrackerConfig struct {
+	Config
+}
+
+// ActionsWorkerConfig ...
+type ActionsWorkerConfig struct {
+	Config
 }
 
 // ServerConfig ...
@@ -18,6 +38,11 @@ type ServerConfig struct {
 // GetAddress ...
 func (sc *ServerConfig) GetAddress() string {
 	return sc.Host + ":" + sc.Port
+}
+
+// WorkerConfig ...
+type WorkerConfig struct {
+	Concurency int64 `xml:"concurency"`
 }
 
 // LoggerConfig ...

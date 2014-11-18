@@ -8,16 +8,29 @@ import (
 	"os"
 )
 
-// Config ...
-var Config *lib.Config
+// APIConfig ...
+var APIConfig *lib.APIConfig
+
+// TrackerConfig ...
+var TrackerConfig *lib.TrackerConfig
+
+// ActionsWorkerConfig ...
+var ActionsWorkerConfig *lib.ActionsWorkerConfig
 
 // InitConfig ...
-func InitConfig(environment string) {
-	file := openFile("conf/" + environment + ".xml")
+func InitConfig(consumer string, environment string) {
+	file := openFile("conf/" + consumer + "/" + environment + ".xml")
 	defer file.Close()
-
 	decoder := xml.NewDecoder(file)
-	decoder.Decode(&Config)
+
+	switch consumer {
+	case lib.APIConfigConsumer:
+		decoder.Decode(&APIConfig)
+	case lib.TrackerConfigConsumer:
+		decoder.Decode(&TrackerConfig)
+	case lib.ActionsWorkerConfigConsumer:
+		decoder.Decode(&ActionsWorkerConfig)
+	}
 
 	return
 }

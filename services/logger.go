@@ -1,15 +1,16 @@
 package services
 
 import (
-	"github.com/astaxie/beego/logs"
+	"github.com/Sirupsen/logrus"
 	"github.com/piotrkowalczuk/gonalytics-backend/lib"
+	// "os"
 )
 
 // Singleton instance of logger
-var Logger *logs.BeeLogger
+var Logger *logrus.Logger
 
 // InitLogger ...
 func InitLogger(config lib.LoggerConfig) {
-	Logger = logs.NewLogger(config.NbOfChannels)
-	Logger.SetLogger(config.Adapter, config.Settings)
+	Logger = logrus.New()
+	Logger.Formatter = &logrus.TextFormatter{}
 }
