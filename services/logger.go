@@ -12,5 +12,5 @@ var Logger *logrus.Logger
 // InitLogger ...
 func InitLogger(config lib.LoggerConfig) {
 	Logger = logrus.New()
-	Logger.Formatter = &logrus.TextFormatter{}
+	Logger.Formatter = &lib.ConsoleFormatter{}
 }

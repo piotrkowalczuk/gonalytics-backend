@@ -11,6 +11,5 @@ func InjectServicesMiddleware(bc *CtrlV1.BaseContext, rw web.ResponseWriter, req
 	bc.Logger = services.Logger
 	bc.RepositoryManager = services.RepositoryManager
 
-	bc.Logger.Debug("lol")
 	next(rw, req)
 }
