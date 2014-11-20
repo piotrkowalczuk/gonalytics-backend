@@ -11,21 +11,16 @@ import (
 
 const (
 	nocolor = 0
-	red     = 31
-	green   = 32
-	yellow  = 33
-	blue    = 34
+	red     = 91
+	green   = 92
+	yellow  = 93
+	cyan    = 96
 )
 
 var (
 	baseTimestamp time.Time
 	isTerminal    bool
 )
-
-func miniTS() string {
-	layout := "2006-01-02 3:04pm"
-	return time.Now().Format(layout)
-}
 
 func init() {
 	baseTimestamp = time.Now()
@@ -72,12 +67,12 @@ func printColored(b *bytes.Buffer, entry *logrus.Entry, keys []string) {
 	case logrus.ErrorLevel, logrus.FatalLevel, logrus.PanicLevel:
 		levelColor = red
 	default:
-		levelColor = blue
+		levelColor = cyan
 	}
 
 	levelText := strings.ToUpper(entry.Level.String())[0:4]
 
-	fmt.Fprintf(b, "[%s] [\x1b[%dm%s\x1b[0m] %-44s", miniTS(), levelColor, levelText, entry.Message)
+	fmt.Fprintf(b, "[%s] \x1b[%dm[%s]\x1b[0m %-44s", entry.Time.Format(time.RFC3339), levelColor, levelText, entry.Message)
 	for _, k := range keys {
 		v := entry.Data[k]
 		fmt.Fprintf(b, " \x1b[%dm%s\x1b[0m=%v", levelColor, k, v)
