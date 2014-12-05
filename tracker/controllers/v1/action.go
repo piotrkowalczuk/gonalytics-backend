@@ -1,14 +1,14 @@
 package v1
 
 import (
-	"github.com/gocraft/web"
+	"encoding/json"
 	"net/http"
 	"time"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/piotrkowalczuk/gonalytics-backend/lib"
+	"github.com/gocql/gocql"
+	"github.com/gocraft/web"
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
-	"github.com/piotrkowalczuk/gonalytics-backend/services"
 	"strconv"
 )
 
@@ -64,28 +64,23 @@ func (bc *BaseContext) VisitsGETHandler(w web.ResponseWriter, r *web.Request) {
 		MadeAt:                 time.Now(),
 	}
 
-	isNewVisit := trackRequest.IsNewVisit()
-
-	actionCreator := lib.NewActionCreator(services.GeoIP)
-	action, err := actionCreator.Create(&trackRequest)
-	if err != nil {
-		bc.HTTPError(w, err, "Unexpected error.", http.StatusInternalServerError)
-		return
-	}
-
-	err = bc.RepositoryManager.Action.Insert(action)
-	if err != nil {
-		bc.HTTPError(w, err, "Unexpected error.", http.StatusInternalServerError)
-		return
-	}
-
-	trackRequest.VisitID = action.VisitID.String()
-
 	message := ""
-	if isNewVisit {
+	if trackRequest.IsNewVisit() {
+		trackRequest.VisitID = gocql.TimeUUID().String()
 		message = "New visit"
 	} else {
 		message = "Existing visit"
+	}
+
+	trackRequestBytes, err := json.Marshal(trackRequest)
+	if err != nil {
+		bc.HTTPError(w, err, "Unexpected error.", http.StatusInternalServerError)
+		return
+	}
+	err = bc.KafkaPublisher.PublishAction(string(trackRequestBytes))
+	if err != nil {
+		bc.HTTPError(w, err, "Unexpected error.", http.StatusInternalServerError)
+		return
 	}
 
 	bc.Logger.WithFields(logrus.Fields{

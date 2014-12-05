@@ -11,7 +11,7 @@ type Config struct {
 	Logger    LoggerConfig    `xml:"logger"`
 	Cassandra CassandraConfig `xml:"cassandra"`
 	GeoIP     GeoIPConfig     `xml:"geo-ip"`
-	RabbitMQ  RabbitMQConfig  `xml:"rabbit-mq"`
+	Kafka     KafkaConfig     `xml:"kafka"`
 }
 
 // APIConfig ...
@@ -47,9 +47,8 @@ type WorkerConfig struct {
 
 // LoggerConfig ...
 type LoggerConfig struct {
-	NbOfChannels int64  `xml:"nb-of-channels"`
-	Adapter      string `xml:"adapter"`
-	Settings     string `xml:"settings"`
+	Adapter  string `xml:"adapter"`
+	Settings string `xml:"settings"`
 }
 
 // CassandraConfig ...
@@ -61,7 +60,7 @@ type CassandraConfig struct {
 }
 
 // GetHosts ...
-func (cc *CassandraConfig) GetHosts() []string {
+func (cc CassandraConfig) GetHosts() []string {
 	hosts := make([]string, len(cc.Hosts))
 
 	for _, host := range cc.Hosts {
@@ -71,9 +70,29 @@ func (cc *CassandraConfig) GetHosts() []string {
 	return hosts
 }
 
-// RabbitMQConfig ...
-type RabbitMQConfig struct {
+// KafkaConfig describes configuration of kafka messaging system.
+type KafkaConfig struct {
 	ConnectionString string `xml:"connection-string"`
+	Publishers       struct {
+		Action KafkaPublisherConfig `xml:"action"`
+	} `xml:"publishers"`
+	Consumers struct {
+		Action KafkaConsumerConfig `xml:"action"`
+	} `xml:"consumers"`
+}
+
+// KafkaPublisherConfig describes configuration of kafka publisher.
+type KafkaPublisherConfig struct {
+	Topic     string `xml:"topic"`
+	Partition int    `xml:"partition"`
+}
+
+// KafkaConsumerConfig describes configuration of kafka consumer.
+type KafkaConsumerConfig struct {
+	Topic     string `xml:"topic"`
+	Partition int    `xml:"partition"`
+	Offset    uint64 `xml:"offset"`
+	MaxSize   uint32 `xml:"max-size"`
 }
 
 // GeoIPConfig ...

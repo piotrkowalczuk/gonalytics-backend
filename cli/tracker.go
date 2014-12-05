@@ -21,12 +21,13 @@ func NewRunTrackerCommand() *cobra.Command {
 			services.InitLogger(services.TrackerConfig.Logger)
 			services.InitGeoIP(services.TrackerConfig.GeoIP)
 			services.InitCassandra(services.TrackerConfig.Cassandra)
-			services.InitRabbitMQ(services.TrackerConfig.RabbitMQ)
+			services.InitKafkaClient(services.TrackerConfig.Kafka)
+			services.InitKafkaPublisher(services.TrackerConfig.Kafka)
 			services.InitRepositoryManager(services.Cassandra)
 
 			defer services.GeoIP.Close()
 			defer services.Cassandra.Close()
-			defer services.RabbitMQ.Close()
+			defer services.KafkaClient.Close()
 
 			services.Logger.Info("Server successfully started on ", services.TrackerConfig.Server.GetAddress())
 			http.ListenAndServe(

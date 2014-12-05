@@ -23,6 +23,7 @@ Commands
 #### Starting
 
     ./gonalytics-backend tracker - starts tracking API (visits, redirects etc)
+    ./gonalytics-backend actions-worker - starts worker process that process incoming actions
     ./gonalytics-backend help [command] - display help message about available commands
 
 Web API
@@ -32,3 +33,5 @@ Public API documentation is available at http://docs.gonalyticsbackend.apiary.io
 Dependencies
 ------------
 - Cassandra
+- Kafka
+- ZooKeeper (Kafka deps)

@@ -11,6 +11,7 @@ import (
 // BaseController contains common properties accross multiple handlers
 type BaseContext struct {
 	RepositoryManager lib.RepositoryManager
+	KafkaPublisher    *lib.KafkaPublisher
 	Logger            *logrus.Logger
 	GeoIP             *geoip2.Reader
 	Response          interface{}

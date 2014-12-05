@@ -66,6 +66,8 @@ func printColored(b *bytes.Buffer, entry *logrus.Entry, keys []string) {
 		levelColor = yellow
 	case logrus.ErrorLevel, logrus.FatalLevel, logrus.PanicLevel:
 		levelColor = red
+	case logrus.DebugLevel:
+		levelColor = 95
 	default:
 		levelColor = cyan
 	}

@@ -10,6 +10,7 @@ import (
 func InjectServicesMiddleware(bc *CtrlV1.BaseContext, rw web.ResponseWriter, req *web.Request, next web.NextMiddlewareFunc) {
 	bc.Logger = services.Logger
 	bc.RepositoryManager = services.RepositoryManager
+	bc.KafkaPublisher = services.KafkaPublisher
 
 	next(rw, req)
 }

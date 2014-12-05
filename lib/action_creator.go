@@ -31,14 +31,10 @@ func (ac *ActionCreator) Create(trackRequest *models.TrackRequest) (*models.Acti
 	}
 
 	var visitID gocql.UUID
-	if trackRequest.IsNewVisit() {
-		visitID = gocql.TimeUUID()
-	} else {
-		visitID, err = gocql.ParseUUID(ac.trackRequest.VisitID)
+	visitID, err = gocql.ParseUUID(ac.trackRequest.VisitID)
 
-		if err != nil {
-			return nil, err
-		}
+	if err != nil {
+		return nil, err
 	}
 
 	return &models.ActionEntity{

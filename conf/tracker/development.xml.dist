@@ -12,9 +12,15 @@
     <geo-ip>
         <path>data/GeoLite2-City.mmdb</path>
     </geo-ip>
-    <rabbit-mq>
-        <connection-string>amqp://rabbitmq</connection-string>
-    </rabbit-mq>
+    <kafka>
+        <connection-string>localhost:9092</connection-string>
+        <publishers>
+            <action>
+                <topic>actions</topic>
+                <partition>1</partition>
+            </action>
+        </publishers>
+    </kafka>
     <cassandra>
         <keyspace>gonalytics</keyspace>
         <hosts>
@@ -22,4 +28,3 @@
         </hosts>
     </cassandra>
 </config>
-a
