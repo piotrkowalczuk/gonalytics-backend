@@ -6,6 +6,7 @@ const (
 	ActionsWorkerConfigConsumer = "worker/actions"
 )
 
+// Config ...
 type Config struct {
 	Server    ServerConfig    `xml:"server"`
 	Logger    LoggerConfig    `xml:"logger"`

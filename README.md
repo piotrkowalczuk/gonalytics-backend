@@ -11,7 +11,7 @@ Installation
 1. Set you GOPATH properly (http://golang.org/doc/code.html#GOPATH)
 2. `go get github.com/piotrkowalczuk/gonalytics-backend`
 3. `go get` if some dependencies are missing
-4. Create `conf/app.conf` based on `conf/app.conf.dist`
+4. Create `conf/**/env.xml` based on `conf/**/env.xml.dist`
 
 Commands
 --------

@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/Shopify/sarama"
+
 	"github.com/piotrkowalczuk/gonalytics-backend/lib"
 )
 
@@ -11,9 +12,15 @@ var KafkaPublisher *lib.KafkaPublisher
 // KafkaClient ...
 var KafkaClient *sarama.Client
 
-func InitKafkaClient(config lib.KafkaConfig) {
+// InitKafkaClient ...
+func InitKafkaClient(name string, config lib.KafkaConfig) {
 	var err error
-	KafkaClient, err = sarama.NewClient("client_id", []string{config.ConnectionString}, sarama.NewClientConfig())
+	KafkaClient, err = sarama.NewClient(
+		name,
+		[]string{config.ConnectionString},
+		sarama.NewClientConfig(),
+	)
+
 	if err != nil {
 		Logger.Error("Connection to Kafka failed.")
 		panic(err)
@@ -22,7 +29,7 @@ func InitKafkaClient(config lib.KafkaConfig) {
 	Logger.Info("Connection to Kafka established sucessfully.")
 }
 
-// InitKafkaPublisherManager ...
+// InitKafkaPublisher ...
 func InitKafkaPublisher(config lib.KafkaConfig) {
 	KafkaPublisher = &lib.KafkaPublisher{
 		Client: KafkaClient,

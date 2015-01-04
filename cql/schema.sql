@@ -10,7 +10,15 @@ CREATE TABLE IF NOT EXISTS gonalytics.actions
     site_id bigint,
     referrer varchar,
     language varchar,
+    // MADE AT
     made_at timestamp,
+    made_at_year int,
+    made_at_month int,
+    made_at_week int,
+    made_at_day int,
+    made_at_hour int,
+    made_at_minute int,
+    made_at_second int,
     // BROWSER
     browser_name varchar,
     browser_version varchar,
@@ -53,7 +61,14 @@ CREATE TABLE IF NOT EXISTS gonalytics.actions
     page_title varchar,
     page_host varchar,
     page_url varchar,
-    PRIMARY KEY (id, visit_id),
+    PRIMARY KEY (visit_id, made_at_year, made_at_month, made_at_week, made_at_day, made_at_hour, made_at_minute, made_at_second),
 )
-WITH CLUSTERING ORDER BY (visit_id DESC)
-AND comment='Column family contains actions.';
+WITH CLUSTERING ORDER BY (
+    made_at_year DESC, 
+    made_at_month DESC, 
+    made_at_week DESC, 
+    made_at_day DESC, 
+    made_at_hour DESC,
+    made_at_minute DESC,
+    made_at_second DESC
+) AND comment='Column family contains actions.';

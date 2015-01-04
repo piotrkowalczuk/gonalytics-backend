@@ -1,11 +1,12 @@
 package cli
 
 import (
+	"net/http"
+
 	"github.com/piotrkowalczuk/gonalytics-backend/lib"
 	"github.com/piotrkowalczuk/gonalytics-backend/services"
 	"github.com/piotrkowalczuk/gonalytics-backend/tracker/routers"
 	"github.com/spf13/cobra"
-	"net/http"
 )
 
 // NewRunTrackerCommand ...
@@ -21,7 +22,7 @@ func NewRunTrackerCommand() *cobra.Command {
 			services.InitLogger(services.TrackerConfig.Logger)
 			services.InitGeoIP(services.TrackerConfig.GeoIP)
 			services.InitCassandra(services.TrackerConfig.Cassandra)
-			services.InitKafkaClient(services.TrackerConfig.Kafka)
+			services.InitKafkaClient("gonalytics-publisher", services.TrackerConfig.Kafka)
 			services.InitKafkaPublisher(services.TrackerConfig.Kafka)
 			services.InitRepositoryManager(services.Cassandra)
 

@@ -20,7 +20,7 @@ func NewRunActionsWorkerCommand() *cobra.Command {
 			services.InitLogger(services.ActionsWorkerConfig.Logger)
 			services.InitGeoIP(services.ActionsWorkerConfig.GeoIP)
 			services.InitCassandra(services.ActionsWorkerConfig.Cassandra)
-			services.InitKafkaClient(services.ActionsWorkerConfig.Kafka)
+			services.InitKafkaClient("actions-worker-1", services.ActionsWorkerConfig.Kafka)
 			services.InitRepositoryManager(services.Cassandra)
 
 			defer services.GeoIP.Close()

@@ -3,10 +3,11 @@ package lib
 import (
 	"bytes"
 	"fmt"
-	"github.com/Sirupsen/logrus"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/Sirupsen/logrus"
 )
 
 const (
@@ -32,6 +33,7 @@ type ConsoleFormatter struct {
 	DisableColors bool
 }
 
+// Format ...
 func (cf *ConsoleFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	isColored := (cf.ForceColors || isTerminal) && !cf.DisableColors
 	b := &bytes.Buffer{}

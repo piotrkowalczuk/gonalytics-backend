@@ -21,7 +21,8 @@ const (
 		location_latitude, location_longitude, location_metro_code,
 		location_time_zone, location_postal_code, location_is_anonymous_proxy,
 		location_is_satellite_provider, page_title, page_host, page_url,
-		made_at
+		made_at, made_at_year, made_at_month, made_at_week, made_at_day,
+		made_at_hour, made_at_minute, made_at_second
 	`
 )
 
@@ -39,7 +40,8 @@ func (ar *ActionRepository) Insert(action *models.ActionEntity) error {
 	)
 	VALUES (
 		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+		?, ?, ?, ?
 	)`
 
 	return cqlr.Bind(cql, action).Exec(ar.Repository.Cassandra)

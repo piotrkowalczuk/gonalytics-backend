@@ -51,4 +51,11 @@ type ActionEntity struct {
 	PageHost                    string     `cql:"page_host"`
 	PageURL                     string     `cql:"page_url"`
 	MadeAt                      time.Time  `cql:"made_at"`
+	MadeAtYear                  int        `cql:"made_at_year"`
+	MadeAtMonth                 int        `cql:"made_at_month"`
+	MadeAtWeek                  int        `cql:"made_at_week"`
+	MadeAtDay                   int        `cql:"made_at_day"`
+	MadeAtHour                  int        `cql:"made_at_hour"`
+	MadeAtMinute                int        `cql:"made_at_minute"`
+	MadeAtSecond                int        `cql:"made_at_second"`
 }

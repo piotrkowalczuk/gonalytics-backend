@@ -16,7 +16,7 @@
         <publishers>
             <action>
                 <topic>actions</topic>
-                <partition>1</partition>
+                <partition>0</partition>
             </action>
         </publishers>
     </kafka>

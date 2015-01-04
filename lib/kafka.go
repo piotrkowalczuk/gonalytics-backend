@@ -4,12 +4,13 @@ import (
 	"github.com/Shopify/sarama"
 )
 
-// KafkaPublisherManager ...
+// KafkaPublisher ...
 type KafkaPublisher struct {
 	Client *sarama.Client
 	Config KafkaConfig
 }
 
+// PublishAction ...
 func (kp *KafkaPublisher) PublishAction(message string) error {
 	producer, err := sarama.NewProducer(kp.Client, nil)
 	if err != nil {

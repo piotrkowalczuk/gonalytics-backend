@@ -37,6 +37,8 @@ func (ac *ActionCreator) Create(trackRequest *models.TrackRequest) (*models.Acti
 		return nil, err
 	}
 
+	_, weekNumber := ac.trackRequest.MadeAt.ISOWeek()
+
 	return &models.ActionEntity{
 		ID:                          gocql.TimeUUID(),
 		VisitID:                     visitID,
@@ -81,6 +83,13 @@ func (ac *ActionCreator) Create(trackRequest *models.TrackRequest) (*models.Acti
 		DeviceIsPhone:               ac.trackRequest.DeviceIsPhone,
 		DeviceIsMobile:              ac.trackRequest.DeviceIsMobile,
 		MadeAt:                      ac.trackRequest.MadeAt,
+		MadeAtYear:                  ac.trackRequest.MadeAt.Year(),
+		MadeAtMonth:                 int(ac.trackRequest.MadeAt.Month()),
+		MadeAtWeek:                  weekNumber,
+		MadeAtDay:                   ac.trackRequest.MadeAt.Day(),
+		MadeAtHour:                  ac.trackRequest.MadeAt.Hour(),
+		MadeAtMinute:                ac.trackRequest.MadeAt.Minute(),
+		MadeAtSecond:                ac.trackRequest.MadeAt.Second(),
 	}, nil
 }
 
