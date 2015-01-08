@@ -2,7 +2,7 @@ DROP KEYSPACE IF EXISTS gonalytics;
 
 CREATE KEYSPACE gonalytics WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
 
-CREATE TABLE IF NOT EXISTS gonalytics.actions
+CREATE TABLE IF NOT EXISTS gonalytics.visit_actions
 (
     id timeuuid,
     visit_id timeuuid,
@@ -61,14 +61,50 @@ CREATE TABLE IF NOT EXISTS gonalytics.actions
     page_title varchar,
     page_host varchar,
     page_url varchar,
-    PRIMARY KEY (visit_id, made_at_year, made_at_month, made_at_week, made_at_day, made_at_hour, made_at_minute, made_at_second),
-)
-WITH CLUSTERING ORDER BY (
-    made_at_year DESC, 
-    made_at_month DESC, 
-    made_at_week DESC, 
-    made_at_day DESC, 
-    made_at_hour DESC,
-    made_at_minute DESC,
-    made_at_second DESC
-) AND comment='Column family contains actions.';
+    PRIMARY KEY (visit_id, id),
+) WITH comment='Column family contains actions.';
+
+CREATE TABLE IF NOT EXISTS gonalytics.site_day_country_actions_counter
+(
+    site_id bigint,
+    nb_of_actions counter,
+    // LOCATION
+    location_country_name varchar,
+    location_country_code varchar,
+    location_country_id int,
+    // MADE AT
+    made_at_year int,
+    made_at_month int,
+    made_at_day int,
+
+    PRIMARY KEY ((site_id, made_at_year, made_at_month, made_at_day), location_country_name, location_country_code, location_country_id),
+);
+
+CREATE TABLE IF NOT EXISTS gonalytics.site_month_country_actions_counter
+(
+    site_id bigint,
+    nb_of_actions counter,
+    // LOCATION
+    location_country_name varchar,
+    location_country_code varchar,
+    location_country_id int,
+    // MADE AT
+    made_at_year int,
+    made_at_month int,
+    
+    PRIMARY KEY ((site_id, made_at_year, made_at_month), location_country_name, location_country_code, location_country_id),
+);
+
+CREATE TABLE IF NOT EXISTS gonalytics.site_year_country_actions_counter
+(
+    site_id bigint,
+    nb_of_actions counter,
+    // LOCATION
+    location_country_name varchar,
+    location_country_code varchar,
+    location_country_id int,
+    // MADE AT
+    made_at_year int,
+    
+    PRIMARY KEY ((site_id, made_at_year), location_country_name, location_country_code, location_country_id),
+);

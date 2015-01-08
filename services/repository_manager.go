@@ -16,7 +16,16 @@ func InitRepositoryManager(cassandra *gocql.Session) {
 	}
 
 	RepositoryManager = lib.RepositoryManager{
-		Action: repositories.ActionRepository{
+		VisitAction: repositories.VisitActionRepository{
+			Repository: repository,
+		},
+		SiteDayCountryActionsCounter: repositories.SiteDayCountryActionsCounterRepository{
+			Repository: repository,
+		},
+		SiteMonthCountryActionsCounter: repositories.SiteMonthCountryActionsCounterRepository{
+			Repository: repository,
+		},
+		SiteYearCountryActionsCounter: repositories.SiteYearCountryActionsCounterRepository{
 			Repository: repository,
 		},
 	}

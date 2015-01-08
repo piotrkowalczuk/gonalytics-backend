@@ -4,5 +4,8 @@ import "github.com/piotrkowalczuk/gonalytics-backend/lib/repositories"
 
 // RepositoryManager ...
 type RepositoryManager struct {
-	Action repositories.ActionRepository
+	VisitAction                    repositories.VisitActionRepository
+	SiteDayCountryActionsCounter   repositories.SiteDayCountryActionsCounterRepository
+	SiteMonthCountryActionsCounter repositories.SiteMonthCountryActionsCounterRepository
+	SiteYearCountryActionsCounter  repositories.SiteYearCountryActionsCounterRepository
 }

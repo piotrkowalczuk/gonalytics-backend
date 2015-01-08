@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	// ActionColumnFamily ...
-	ActionColumnFamily = "actions"
-	allFields          = `
+	// VisitActionColumnFamily ...
+	VisitActionColumnFamily = "visit_actions"
+	allFields               = `
 		id, ip, visit_id, site_id, referrer, language, browser_name,
 		browser_version, browser_major_version, browser_user_agent,
 		browser_platform, browser_cookie, browser_plugin_java, browser_is_online,
@@ -26,15 +26,15 @@ const (
 	`
 )
 
-// ActionRepository ...
-type ActionRepository struct {
+// VisitActionRepository ...
+type VisitActionRepository struct {
 	Repository
 }
 
 // Insert ...
-func (ar *ActionRepository) Insert(action *models.ActionEntity) error {
+func (r *VisitActionRepository) Insert(action *models.ActionEntity) error {
 	cql := `
-	INSERT INTO ` + ActionColumnFamily + `
+	INSERT INTO ` + VisitActionColumnFamily + `
 	(
 		` + allFields + `
 	)
@@ -44,14 +44,14 @@ func (ar *ActionRepository) Insert(action *models.ActionEntity) error {
 		?, ?, ?, ?
 	)`
 
-	return cqlr.Bind(cql, action).Exec(ar.Repository.Cassandra)
+	return cqlr.Bind(cql, action).Exec(r.Repository.Cassandra)
 }
 
 // Find ...
-func (ar *ActionRepository) Find() ([]*models.ActionEntity, error) {
-	cql := `SELECT ` + allFields + ` FROM ` + ActionColumnFamily
+func (r *VisitActionRepository) Find() ([]*models.ActionEntity, error) {
+	cql := `SELECT ` + allFields + ` FROM ` + VisitActionColumnFamily
 
-	query := ar.Repository.Cassandra.Query(cql, "me").Consistency(gocql.One)
+	query := r.Repository.Cassandra.Query(cql, "me").Consistency(gocql.One)
 
 	b := cqlr.BindQuery(query)
 

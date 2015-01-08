@@ -64,7 +64,7 @@ func (aw *ActionsWorker) Start() {
 	defer aw.consumer.Close()
 
 	aw.consume(
-		aw.saveAction,
+		aw.saveToCassandra,
 	)
 }
 
@@ -187,17 +187,43 @@ func (aw *ActionsWorker) consume(callbacks ...ConsumedFunc) {
 	}
 }
 
-func (aw *ActionsWorker) saveAction(trackRequest *models.TrackRequest) error {
+func (aw *ActionsWorker) saveToCassandra(trackRequest *models.TrackRequest) error {
 	actionCreator := lib.NewActionCreator(aw.GeoIP)
 	action, err := actionCreator.Create(trackRequest)
 	if err != nil {
 		return err
 	}
 
-	err = aw.RepositoryManager.Action.Insert(action)
+	err = aw.RepositoryManager.VisitAction.Insert(action)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	if err = aw.RepositoryManager.SiteDayCountryActionsCounter.Increment(
+		action.SiteID,
+		action.LocationCountryName,
+		action.LocationCountryCode,
+		action.LocationCountryID,
+		time.Now(),
+	); err != nil {
+		return err
+	}
+
+	if err = aw.RepositoryManager.SiteMonthCountryActionsCounter.Increment(
+		action.SiteID,
+		action.LocationCountryName,
+		action.LocationCountryCode,
+		action.LocationCountryID,
+		time.Now(),
+	); err != nil {
+		return err
+	}
+
+	return aw.RepositoryManager.SiteYearCountryActionsCounter.Increment(
+		action.SiteID,
+		action.LocationCountryName,
+		action.LocationCountryCode,
+		action.LocationCountryID,
+		time.Now(),
+	)
 }
