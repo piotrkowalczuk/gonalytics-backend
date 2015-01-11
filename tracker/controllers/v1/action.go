@@ -39,6 +39,7 @@ func (bc *BaseContext) VisitsGETHandler(w web.ResponseWriter, r *web.Request) {
 		RemoteAddress:          r.RemoteAddr,
 		Domain:                 r.Header.Get("Origin"),
 		VisitID:                r.FormValue("v.id"),
+		InitializeVisit:        false,
 		PageTitle:              r.FormValue("p.t"),
 		PageHost:               r.FormValue("p.h"),
 		PageURL:                r.FormValue("p.u"),
@@ -86,11 +87,13 @@ func (bc *BaseContext) VisitsGETHandler(w web.ResponseWriter, r *web.Request) {
 		}
 
 		if !isActiveVisit {
+			trackRequest.InitializeVisit = true
 			trackRequest.VisitID = gocql.TimeUUID().String()
 			message = "Outdated visit id"
 		}
 	} else {
 		trackRequest.VisitID = gocql.TimeUUID().String()
+		trackRequest.InitializeVisit = true
 		message = "Missing or invalid visit id"
 	}
 

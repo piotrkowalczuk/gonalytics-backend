@@ -151,6 +151,23 @@ CREATE TABLE IF NOT EXISTS gonalytics.site_year_browser_actions_counter
     PRIMARY KEY ((site_id, made_at_year), browser_name, browser_version),
 );
 
+
+CREATE TABLE IF NOT EXISTS gonalytics.site_day_country_visits_counter
+(
+    site_id bigint,
+    count counter,
+    // LOCATION
+    location_country_name varchar,
+    location_country_code varchar,
+    location_country_id int,
+    // MADE AT
+    made_at_year int,
+    made_at_month int,
+    made_at_day int,
+    
+    PRIMARY KEY ((site_id, made_at_year, made_at_month, made_at_day), location_country_name, location_country_code, location_country_id),
+);
+
 CREATE TABLE IF NOT EXISTS gonalytics.site_month_country_visits_counter
 (
     site_id bigint,

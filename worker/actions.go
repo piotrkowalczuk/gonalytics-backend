@@ -201,6 +201,65 @@ func (aw *ActionsWorker) saveToCassandra(trackRequest *models.TrackRequest) erro
 		return err
 	}
 
+	if trackRequest.InitializeVisit {
+		// COUNTRY PRE AGREGATION
+		if err = aw.RepositoryManager.SiteDayCountryVisitsCounter.Increment(
+			action.SiteID,
+			action.LocationCountryName,
+			action.LocationCountryCode,
+			action.LocationCountryID,
+			now,
+		); err != nil {
+			return err
+		}
+
+		if err = aw.RepositoryManager.SiteMonthCountryVisitsCounter.Increment(
+			action.SiteID,
+			action.LocationCountryName,
+			action.LocationCountryCode,
+			action.LocationCountryID,
+			now,
+		); err != nil {
+			return err
+		}
+
+		if err := aw.RepositoryManager.SiteYearCountryVisitsCounter.Increment(
+			action.SiteID,
+			action.LocationCountryName,
+			action.LocationCountryCode,
+			action.LocationCountryID,
+			now,
+		); err != nil {
+			return err
+		}
+
+		// BROWSER PRE AGREGATION
+		if err = aw.RepositoryManager.SiteDayBrowserVisitsCounter.Increment(
+			action.SiteID,
+			action.BrowserName,
+			action.BrowserVersion,
+			now,
+		); err != nil {
+			return err
+		}
+
+		if err = aw.RepositoryManager.SiteMonthBrowserVisitsCounter.Increment(
+			action.SiteID,
+			action.BrowserName,
+			action.BrowserVersion,
+			now,
+		); err != nil {
+			return err
+		}
+
+		return aw.RepositoryManager.SiteYearBrowserVisitsCounter.Increment(
+			action.SiteID,
+			action.BrowserName,
+			action.BrowserVersion,
+			now,
+		)
+	}
+
 	// COUNTRY PRE AGREGATION
 	if err = aw.RepositoryManager.SiteDayCountryActionsCounter.Increment(
 		action.SiteID,

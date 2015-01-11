@@ -1,7 +1,6 @@
 package models
 
 import (
-	"log"
 	"net"
 	"time"
 
@@ -14,6 +13,7 @@ type TrackRequest struct {
 	RemoteAddress          string
 	Domain                 string
 	VisitID                string
+	InitializeVisit        bool
 	PageTitle              string
 	PageHost               string
 	PageURL                string

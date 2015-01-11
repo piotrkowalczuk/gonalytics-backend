@@ -94,8 +94,7 @@ func (ac *ActionCreator) Create(trackRequest *models.TrackRequest) (*models.Acti
 }
 
 func (ac *ActionCreator) createLocation() (*models.Location, error) {
-	// geoLocation, err := geoIP.City(net.ParseIP(ac.trackRequest.GetRequestIP()))
-	geoLocation, err := ac.geoIP.City(net.ParseIP("78.52.240.125"))
+	geoLocation, err := geoIP.City(net.ParseIP(ac.trackRequest.GetRequestIP()))
 
 	if err != nil {
 		return nil, err
