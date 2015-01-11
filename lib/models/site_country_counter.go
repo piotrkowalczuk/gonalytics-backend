@@ -5,7 +5,7 @@ type SiteYearCountryCounterEntity struct {
 	SiteID              int64  `json:"siteId"`
 	LocationCountryName string `json:"locationCountryName"`
 	LocationCountryCode string `json:"locationCountryCode"`
-	LocationCountryID   string `json:"locationCountryID"`
+	LocationCountryID   int    `json:"locationCountryID"`
 	MadeAtYear          int    `json:"madeAtYear"`
 	Count               int64  `json:"count"`
 }

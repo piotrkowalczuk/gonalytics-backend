@@ -23,6 +23,7 @@ func (bc *BaseContext) NbOfActionsByBrowserGETHandler(w web.ResponseWriter, r *w
 		timestamp, err := strconv.ParseInt(timestampString, 10, 64)
 		if err != nil {
 			bc.HTTPError(w, err, "Unexpected error.", http.StatusBadRequest)
+			return
 		}
 
 		date = time.Unix(timestamp, 0)
