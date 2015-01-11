@@ -19,23 +19,81 @@ func InitRepositoryManager(cassandra *gocql.Session) {
 		VisitActions: repositories.VisitActionsRepository{
 			Repository: repository,
 		},
-		SiteDayBrowserActionsCounter: repositories.SiteDayBrowserActionsCounterRepository{
-			Repository: repository,
+		// Actions by browser
+		SiteDayBrowserActionsCounter: repositories.SiteDayBrowserCounterRepository{
+			Repository: repositories.Repository{
+				Cassandra:    cassandra,
+				ColumnFamily: repositories.SiteDayBrowserActionsCounterColumnFamily,
+			},
 		},
-		SiteMonthBrowserActionsCounter: repositories.SiteMonthBrowserActionsCounterRepository{
-			Repository: repository,
+		SiteMonthBrowserActionsCounter: repositories.SiteMonthBrowserCounterRepository{
+			Repository: repositories.Repository{
+				Cassandra:    cassandra,
+				ColumnFamily: repositories.SiteMonthBrowserActionsCounterColumnFamily,
+			},
 		},
-		SiteYearBrowserActionsCounter: repositories.SiteYearBrowserActionsCounterRepository{
-			Repository: repository,
+		SiteYearBrowserActionsCounter: repositories.SiteYearBrowserCounterRepository{
+			Repository: repositories.Repository{
+				Cassandra:    cassandra,
+				ColumnFamily: repositories.SiteYearBrowserActionsCounterColumnFamily,
+			},
 		},
-		SiteDayCountryActionsCounter: repositories.SiteDayCountryActionsCounterRepository{
-			Repository: repository,
+		// Visits by browser
+		SiteDayBrowserVisitsCounter: repositories.SiteDayBrowserCounterRepository{
+			Repository: repositories.Repository{
+				Cassandra:    cassandra,
+				ColumnFamily: repositories.SiteDayBrowserVisitsCounterColumnFamily,
+			},
 		},
-		SiteMonthCountryActionsCounter: repositories.SiteMonthCountryActionsCounterRepository{
-			Repository: repository,
+		SiteMonthBrowserVisitsCounter: repositories.SiteMonthBrowserCounterRepository{
+			Repository: repositories.Repository{
+				Cassandra:    cassandra,
+				ColumnFamily: repositories.SiteMonthBrowserVisitsCounterColumnFamily,
+			},
 		},
-		SiteYearCountryActionsCounter: repositories.SiteYearCountryActionsCounterRepository{
-			Repository: repository,
+		SiteYearBrowserVisitsCounter: repositories.SiteYearBrowserCounterRepository{
+			Repository: repositories.Repository{
+				Cassandra:    cassandra,
+				ColumnFamily: repositories.SiteYearBrowserVisitsCounterColumnFamily,
+			},
+		},
+		// Actions by country
+		SiteDayCountryActionsCounter: repositories.SiteDayCountryCounterRepository{
+			Repository: repositories.Repository{
+				Cassandra:    cassandra,
+				ColumnFamily: repositories.SiteDayCountryActionsCounterColumnFamily,
+			},
+		},
+		SiteMonthCountryActionsCounter: repositories.SiteMonthCountryCounterRepository{
+			Repository: repositories.Repository{
+				Cassandra:    cassandra,
+				ColumnFamily: repositories.SiteMonthCountryActionsCounterColumnFamily,
+			},
+		},
+		SiteYearCountryActionsCounter: repositories.SiteYearCountryCounterRepository{
+			Repository: repositories.Repository{
+				Cassandra:    cassandra,
+				ColumnFamily: repositories.SiteYearCountryActionsCounterColumnFamily,
+			},
+		},
+		// Visits by country
+		SiteDayCountryVisitsCounter: repositories.SiteDayCountryCounterRepository{
+			Repository: repositories.Repository{
+				Cassandra:    cassandra,
+				ColumnFamily: repositories.SiteDayCountryVisitsCounterColumnFamily,
+			},
+		},
+		SiteMonthCountryVisitsCounter: repositories.SiteMonthCountryCounterRepository{
+			Repository: repositories.Repository{
+				Cassandra:    cassandra,
+				ColumnFamily: repositories.SiteMonthCountryVisitsCounterColumnFamily,
+			},
+		},
+		SiteYearCountryVisitsCounter: repositories.SiteYearCountryCounterRepository{
+			Repository: repositories.Repository{
+				Cassandra:    cassandra,
+				ColumnFamily: repositories.SiteYearCountryVisitsCounterColumnFamily,
+			},
 		},
 	}
 }

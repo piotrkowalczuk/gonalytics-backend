@@ -8,58 +8,60 @@ import (
 )
 
 const (
-	// SiteYearBrowserActionsCounterColumnFamily ...
+	// SiteYearBrowserActionCounterColumnFamily ...
 	SiteYearBrowserActionsCounterColumnFamily = "site_year_browser_actions_counter"
-	// SiteYearBrowserActionsFields ...
-	SiteYearBrowserActionsFields = `
+	// SiteYearBrowserVisitsCounterColumnFamily ...
+	SiteYearBrowserVisitsCounterColumnFamily = "site_year_browser_visits_counter"
+	// SiteYearBrowserCounterFields ...
+	SiteYearBrowserCounterFields = `
         site_id, count, browser_name, browser_version,
         made_at_year
     `
 )
 
-// SiteYearBrowserActionsCounterRepository ...
-type SiteYearBrowserActionsCounterRepository struct {
+// SiteYearBrowserCounterRepository ...
+type SiteYearBrowserCounterRepository struct {
 	Repository
 }
 
 // Increment ...
-func (sybacr *SiteYearBrowserActionsCounterRepository) Increment(
+func (sybcr *SiteYearBrowserCounterRepository) Increment(
 	siteID int64,
 	browserName string,
 	browserVersion string,
 	date time.Time,
 ) error {
 	cql := `
-    UPDATE ` + SiteYearBrowserActionsCounterColumnFamily + `
+    UPDATE ` + sybcr.ColumnFamily + `
     SET count = count + 1
     WHERE site_id = ?
     AND browser_name = ?
     AND browser_version = ?
     AND made_at_year = ?
     `
-	return sybacr.Repository.
+	return sybcr.Repository.
 		Cassandra.
 		Query(cql, siteID, browserName, browserVersion, date.Year()).
 		Exec()
 }
 
 // Find ...
-func (sybacr *SiteYearBrowserActionsCounterRepository) Find(
+func (sybcr *SiteYearBrowserCounterRepository) Find(
 	siteID int64,
 	date time.Time,
-) ([]*models.SiteYearBrowserActionsCounterEntity, error) {
-	cql := `SELECT ` + SiteYearBrowserActionsFields +
-		` FROM ` + SiteYearBrowserActionsCounterColumnFamily +
+) ([]*models.SiteYearBrowserCounterEntity, error) {
+	cql := `SELECT ` + SiteYearBrowserCounterFields +
+		` FROM ` + sybcr.ColumnFamily +
 		` WHERE site_id = ? AND made_at_year = ?`
 
-	iter := sybacr.Repository.
+	iter := sybcr.Repository.
 		Cassandra.
 		Query(cql, siteID, date.Year()).
 		Consistency(gocql.One).
 		Iter()
 
-	var counter models.SiteYearBrowserActionsCounterEntity
-	counters := []*models.SiteYearBrowserActionsCounterEntity{}
+	var counter models.SiteYearBrowserCounterEntity
+	counters := []*models.SiteYearBrowserCounterEntity{}
 
 	for iter.Scan(
 		&counter.SiteID,

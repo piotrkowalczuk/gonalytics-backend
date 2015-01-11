@@ -10,24 +10,26 @@ import (
 const (
 	// SiteYearCountryActionsCounterColumnFamily ...
 	SiteYearCountryActionsCounterColumnFamily = "site_year_country_actions_counter"
+	// SiteYearCountryVisitsCounterColumnFamily ...
+	SiteYearCountryVisitsCounterColumnFamily = "site_year_country_visits_counter"
 	// SiteYearCountryActionsFields ...
-	SiteYearCountryActionsFields = `
+	SiteYearCountryCounterFields = `
         site_id, count, location_country_name, 
         location_country_code, location_country_id,
         made_at_year
     `
 )
 
-// SiteYearCountryActionsCounterRepository ...
-type SiteYearCountryActionsCounterRepository struct {
+// SiteYearCountryCounterRepository ...
+type SiteYearCountryCounterRepository struct {
 	Repository
 }
 
 // Increment ...
-func (sycacr *SiteYearCountryActionsCounterRepository) Increment(siteID int64, countryName string, countryCode string, countryID uint, date time.Time) error {
+func (syccr *SiteYearCountryCounterRepository) Increment(siteID int64, countryName string, countryCode string, countryID uint, date time.Time) error {
 
 	cql := `
-    UPDATE ` + SiteYearCountryActionsCounterColumnFamily + `
+    UPDATE ` + syccr.ColumnFamily + `
     SET count = count + 1
     WHERE site_id = ?
     AND location_country_name = ?
@@ -35,29 +37,29 @@ func (sycacr *SiteYearCountryActionsCounterRepository) Increment(siteID int64, c
     AND location_country_id = ?
     AND made_at_year = ?
     `
-	return sycacr.Repository.
+	return syccr.Repository.
 		Cassandra.
 		Query(cql, siteID, countryName, countryCode, countryID, date.Year()).
 		Exec()
 }
 
 // Find ...
-func (sycacr *SiteYearCountryActionsCounterRepository) Find(
+func (syccr *SiteYearCountryCounterRepository) Find(
 	siteID int64,
 	date time.Time,
-) ([]*models.SiteYearCountryActionsCounterEntity, error) {
-	cql := `SELECT ` + SiteYearCountryActionsFields +
-		` FROM ` + SiteYearCountryActionsCounterColumnFamily +
+) ([]*models.SiteYearCountryCounterEntity, error) {
+	cql := `SELECT ` + SiteYearCountryCounterFields +
+		` FROM ` + syccr.ColumnFamily +
 		` WHERE site_id = ? AND made_at_year = ?`
 
-	iter := sycacr.Repository.
+	iter := syccr.Repository.
 		Cassandra.
 		Query(cql, siteID, date.Year()).
 		Consistency(gocql.One).
 		Iter()
 
-	var counter models.SiteYearCountryActionsCounterEntity
-	counters := []*models.SiteYearCountryActionsCounterEntity{}
+	var counter models.SiteYearCountryCounterEntity
+	counters := []*models.SiteYearCountryCounterEntity{}
 
 	for iter.Scan(
 		&counter.SiteID,

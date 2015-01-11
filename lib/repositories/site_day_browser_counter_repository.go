@@ -10,6 +10,8 @@ import (
 const (
 	// SiteDayBrowserActionsCounterColumnFamily ...
 	SiteDayBrowserActionsCounterColumnFamily = "site_day_browser_actions_counter"
+	// SiteDayBrowserVisitsCounterColumnFamily ...
+	SiteDayBrowserVisitsCounterColumnFamily = "site_day_browser_visits_counter"
 	// SiteDayBrowserActionsFields ...
 	SiteDayBrowserActionsFields = `
         site_id, count, browser_name, browser_version,
@@ -17,20 +19,20 @@ const (
     `
 )
 
-// SiteDayBrowserActionsCounterRepository ...
-type SiteDayBrowserActionsCounterRepository struct {
+// SiteDayBrowserCounterRepository ...
+type SiteDayBrowserCounterRepository struct {
 	Repository
 }
 
 // Increment ...
-func (sdbacr *SiteDayBrowserActionsCounterRepository) Increment(
+func (sdbcr *SiteDayBrowserCounterRepository) Increment(
 	siteID int64,
 	browserName string,
 	browserVersion string,
 	date time.Time,
 ) error {
 	cql := `
-    UPDATE ` + SiteDayBrowserActionsCounterColumnFamily + `
+    UPDATE ` + sdbcr.ColumnFamily + `
     SET count = count + 1
     WHERE site_id = ?
     AND browser_name = ?
@@ -39,29 +41,29 @@ func (sdbacr *SiteDayBrowserActionsCounterRepository) Increment(
     AND made_at_month = ?
     AND made_at_day = ?
     `
-	return sdbacr.Repository.
+	return sdbcr.Repository.
 		Cassandra.
 		Query(cql, siteID, browserName, browserVersion, date.Year(), date.Month(), date.Day()).
 		Exec()
 }
 
 // Find ...
-func (sdbacr *SiteDayBrowserActionsCounterRepository) Find(
+func (sdbcr *SiteDayBrowserCounterRepository) Find(
 	siteID int64,
 	date time.Time,
-) ([]*models.SiteDayBrowserActionsCounterEntity, error) {
+) ([]*models.SiteDayBrowserCounterEntity, error) {
 	cql := `SELECT ` + SiteDayBrowserActionsFields +
-		` FROM ` + SiteDayBrowserActionsCounterColumnFamily +
+		` FROM ` + sdbcr.ColumnFamily +
 		` WHERE site_id = ? AND made_at_year = ? AND made_at_month = ? AND made_at_day = ?`
 
-	iter := sdbacr.Repository.
+	iter := sdbcr.Repository.
 		Cassandra.
 		Query(cql, siteID, date.Year(), date.Month(), date.Day()).
 		Consistency(gocql.One).
 		Iter()
 
-	var counter models.SiteDayBrowserActionsCounterEntity
-	counters := []*models.SiteDayBrowserActionsCounterEntity{}
+	var counter models.SiteDayBrowserCounterEntity
+	counters := []*models.SiteDayBrowserCounterEntity{}
 
 	for iter.Scan(
 		&counter.SiteID,
