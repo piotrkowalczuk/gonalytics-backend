@@ -12,7 +12,7 @@ const (
 	SiteMonthCountryActionsCounterColumnFamily = "site_month_country_actions_counter"
 	// SiteMonthCountryActionsFields ...
 	SiteMonthCountryActionsFields = `
-        site_id, nb_of_actions, location_country_name, location_country_code, location_country_id,
+        site_id, count, location_country_name, location_country_code, location_country_id,
         made_at_year, made_at_month
     `
 )
@@ -27,7 +27,7 @@ func (smcacr *SiteMonthCountryActionsCounterRepository) Increment(siteID int64, 
 
 	cql := `
     UPDATE ` + SiteMonthCountryActionsCounterColumnFamily + `
-    SET nb_of_actions = nb_of_actions + 1
+    SET count = count + 1
     WHERE site_id = ?
     AND location_country_name = ?
     AND location_country_code = ?
@@ -61,7 +61,7 @@ func (smcacr *SiteMonthCountryActionsCounterRepository) Find(
 
 	for iter.Scan(
 		&counter.SiteID,
-		&counter.NbOfActions,
+		&counter.Count,
 		&counter.LocationCountryName,
 		&counter.LocationCountryCode,
 		&counter.LocationCountryID,

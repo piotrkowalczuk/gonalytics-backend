@@ -54,7 +54,6 @@ func (tr *TrackRequest) IsValidVisitID() bool {
 	}
 
 	if _, err := gocql.ParseUUID(tr.VisitID); err != nil {
-		log.Println("lol", tr.VisitID, err)
 		return false
 	}
 

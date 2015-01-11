@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS gonalytics.visit_actions
 CREATE TABLE IF NOT EXISTS gonalytics.site_day_country_actions_counter
 (
     site_id bigint,
-    nb_of_actions counter,
+    count counter,
     // LOCATION
     location_country_name varchar,
     location_country_code varchar,
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS gonalytics.site_day_country_actions_counter
 CREATE TABLE IF NOT EXISTS gonalytics.site_month_country_actions_counter
 (
     site_id bigint,
-    nb_of_actions counter,
+    count counter,
     // LOCATION
     location_country_name varchar,
     location_country_code varchar,
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS gonalytics.site_month_country_actions_counter
 CREATE TABLE IF NOT EXISTS gonalytics.site_year_country_actions_counter
 (
     site_id bigint,
-    nb_of_actions counter,
+    count counter,
     // LOCATION
     location_country_name varchar,
     location_country_code varchar,
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS gonalytics.site_year_country_actions_counter
 CREATE TABLE IF NOT EXISTS gonalytics.site_day_browser_actions_counter
 (
     site_id bigint,
-    nb_of_actions counter,
+    count counter,
     // BROWSER
     browser_name varchar,
     browser_version varchar,
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS gonalytics.site_day_browser_actions_counter
 CREATE TABLE IF NOT EXISTS gonalytics.site_month_browser_actions_counter
 (
     site_id bigint,
-    nb_of_actions counter,
+    count counter,
     // BROWSER
     browser_name varchar,
     browser_version varchar,
@@ -141,7 +141,78 @@ CREATE TABLE IF NOT EXISTS gonalytics.site_month_browser_actions_counter
 CREATE TABLE IF NOT EXISTS gonalytics.site_year_browser_actions_counter
 (
     site_id bigint,
-    nb_of_actions counter,
+    count counter,
+    // BROWSER
+    browser_name varchar,
+    browser_version varchar,
+    // MADE AT
+    made_at_year int,
+    
+    PRIMARY KEY ((site_id, made_at_year), browser_name, browser_version),
+);
+
+CREATE TABLE IF NOT EXISTS gonalytics.site_month_country_visits_counter
+(
+    site_id bigint,
+    count counter,
+    // LOCATION
+    location_country_name varchar,
+    location_country_code varchar,
+    location_country_id int,
+    // MADE AT
+    made_at_year int,
+    made_at_month int,
+    
+    PRIMARY KEY ((site_id, made_at_year, made_at_month), location_country_name, location_country_code, location_country_id),
+);
+
+CREATE TABLE IF NOT EXISTS gonalytics.site_year_country_visits_counter
+(
+    site_id bigint,
+    count counter,
+    // LOCATION
+    location_country_name varchar,
+    location_country_code varchar,
+    location_country_id int,
+    // MADE AT
+    made_at_year int,
+    
+    PRIMARY KEY ((site_id, made_at_year), location_country_name, location_country_code, location_country_id),
+);
+
+CREATE TABLE IF NOT EXISTS gonalytics.site_day_browser_visits_counter
+(
+    site_id bigint,
+    count counter,
+    // BROWSER
+    browser_name varchar,
+    browser_version varchar,
+    // MADE AT
+    made_at_year int,
+    made_at_month int,
+    made_at_day int,
+
+    PRIMARY KEY ((site_id, made_at_year, made_at_month, made_at_day), browser_name, browser_version),
+);
+
+CREATE TABLE IF NOT EXISTS gonalytics.site_month_browser_visits_counter
+(
+    site_id bigint,
+    count counter,
+    // BROWSER
+    browser_name varchar,
+    browser_version varchar,
+    // MADE AT
+    made_at_year int,
+    made_at_month int,
+    
+    PRIMARY KEY ((site_id, made_at_year, made_at_month), browser_name, browser_version),
+);
+
+CREATE TABLE IF NOT EXISTS gonalytics.site_year_browser_visits_counter
+(
+    site_id bigint,
+    count counter,
     // BROWSER
     browser_name varchar,
     browser_version varchar,

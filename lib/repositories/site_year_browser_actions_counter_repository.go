@@ -12,7 +12,7 @@ const (
 	SiteYearBrowserActionsCounterColumnFamily = "site_year_browser_actions_counter"
 	// SiteYearBrowserActionsFields ...
 	SiteYearBrowserActionsFields = `
-        site_id, nb_of_actions, browser_name, browser_version,
+        site_id, count, browser_name, browser_version,
         made_at_year
     `
 )
@@ -31,7 +31,7 @@ func (sybacr *SiteYearBrowserActionsCounterRepository) Increment(
 ) error {
 	cql := `
     UPDATE ` + SiteYearBrowserActionsCounterColumnFamily + `
-    SET nb_of_actions = nb_of_actions + 1
+    SET count = count + 1
     WHERE site_id = ?
     AND browser_name = ?
     AND browser_version = ?
@@ -63,7 +63,7 @@ func (sybacr *SiteYearBrowserActionsCounterRepository) Find(
 
 	for iter.Scan(
 		&counter.SiteID,
-		&counter.NbOfActions,
+		&counter.Count,
 		&counter.BrowserName,
 		&counter.BrowserVersion,
 		&counter.MadeAtYear,
