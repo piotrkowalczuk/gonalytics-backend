@@ -22,8 +22,9 @@ Commands
 
 #### Starting
 
-    ./gonalytics-backend tracker - starts tracking API (visits, redirects etc)
+    ./gonalytics-backend tracker - starts tracking API HTTP server (visits, redirects etc)
     ./gonalytics-backend actions-worker - starts worker process that process incoming actions
+    ./gonalytics-backend api - starts CRUD API HTTP server
     ./gonalytics-backend help [command] - display help message about available commands
 
 Web API
