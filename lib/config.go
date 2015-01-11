@@ -1,8 +1,11 @@
 package lib
 
 const (
-	APIConfigConsumer           = "api"
-	TrackerConfigConsumer       = "tracker"
+	// APIConfigConsumer ...
+	APIConfigConsumer = "api"
+	// TrackerConfigConsumer ...
+	TrackerConfigConsumer = "tracker"
+	// ActionsWorkerConfigConsumer ...
 	ActionsWorkerConfigConsumer = "worker/actions"
 )
 

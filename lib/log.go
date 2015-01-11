@@ -28,6 +28,7 @@ func init() {
 	isTerminal = logrus.IsTerminal()
 }
 
+// ConsoleFormatter ...
 type ConsoleFormatter struct {
 	ForceColors   bool
 	DisableColors bool

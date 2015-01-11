@@ -6,8 +6,8 @@ import (
 
 func init() {
 	app := &cobra.Command{Use: "gonalytics"}
-	app.AddCommand(NewRunTrackerCommand())
 
+	app.AddCommand(NewRunTrackerCommand())
 	app.AddCommand(NewRunActionsWorkerCommand())
 	app.Execute()
 }

@@ -188,23 +188,26 @@ func (aw *ActionsWorker) consume(callbacks ...ConsumedFunc) {
 }
 
 func (aw *ActionsWorker) saveToCassandra(trackRequest *models.TrackRequest) error {
+	now := time.Now()
 	actionCreator := lib.NewActionCreator(aw.GeoIP)
+
 	action, err := actionCreator.Create(trackRequest)
 	if err != nil {
 		return err
 	}
 
-	err = aw.RepositoryManager.VisitAction.Insert(action)
+	err = aw.RepositoryManager.VisitActions.Insert(action)
 	if err != nil {
 		return err
 	}
 
+	// COUNTRY PRE AGREGATION
 	if err = aw.RepositoryManager.SiteDayCountryActionsCounter.Increment(
 		action.SiteID,
 		action.LocationCountryName,
 		action.LocationCountryCode,
 		action.LocationCountryID,
-		time.Now(),
+		now,
 	); err != nil {
 		return err
 	}
@@ -214,16 +217,44 @@ func (aw *ActionsWorker) saveToCassandra(trackRequest *models.TrackRequest) erro
 		action.LocationCountryName,
 		action.LocationCountryCode,
 		action.LocationCountryID,
-		time.Now(),
+		now,
 	); err != nil {
 		return err
 	}
 
-	return aw.RepositoryManager.SiteYearCountryActionsCounter.Increment(
+	if err := aw.RepositoryManager.SiteYearCountryActionsCounter.Increment(
 		action.SiteID,
 		action.LocationCountryName,
 		action.LocationCountryCode,
 		action.LocationCountryID,
-		time.Now(),
+		now,
+	); err != nil {
+		return err
+	}
+
+	// BROWSER PRE AGREGATION
+	if err = aw.RepositoryManager.SiteDayBrowserActionsCounter.Increment(
+		action.SiteID,
+		action.BrowserName,
+		action.BrowserVersion,
+		now,
+	); err != nil {
+		return err
+	}
+
+	if err = aw.RepositoryManager.SiteMonthBrowserActionsCounter.Increment(
+		action.SiteID,
+		action.BrowserName,
+		action.BrowserVersion,
+		now,
+	); err != nil {
+		return err
+	}
+
+	return aw.RepositoryManager.SiteYearBrowserActionsCounter.Increment(
+		action.SiteID,
+		action.BrowserName,
+		action.BrowserVersion,
+		now,
 	)
 }

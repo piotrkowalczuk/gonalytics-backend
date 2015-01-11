@@ -1,6 +1,7 @@
 package models
 
 import (
+	"log"
 	"net"
 	"time"
 
@@ -46,15 +47,21 @@ func (tr *TrackRequest) GetRequestIP() string {
 	return requestIP
 }
 
-// IsNewVisit ...
-func (tr *TrackRequest) IsNewVisit() bool {
+// IsValidVisitID ...
+func (tr *TrackRequest) IsValidVisitID() bool {
 	if len(tr.VisitID) == 0 {
-		return true
+		return false
 	}
 
 	if _, err := gocql.ParseUUID(tr.VisitID); err != nil {
-		return true
+		log.Println("lol", tr.VisitID, err)
+		return false
 	}
 
-	return false
+	return true
+}
+
+// ParseVisitID ...
+func (tr *TrackRequest) ParseVisitID() (gocql.UUID, error) {
+	return gocql.ParseUUID(tr.VisitID)
 }

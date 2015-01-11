@@ -31,25 +31,3 @@ func (sdcacr *SiteDayCountryActionsCounterRepository) Increment(siteID int64, co
 		Query(cql, siteID, countryName, countryCode, countryID, date.Year(), date.Month(), date.Day()).
 		Exec()
 }
-
-// // Find ...
-// func (ar *ActionRepository) Find() ([]*models.ActionEntity, error) {
-// 	cql := `SELECT ` + allFields + ` FROM ` + ActionColumnFamily
-
-// 	query := ar.Repository.Cassandra.Query(cql, "me").Consistency(gocql.One)
-
-// 	b := cqlr.BindQuery(query)
-
-// 	actions := []*models.ActionEntity{}
-// 	var a models.ActionEntity
-
-// 	for b.Scan(&a) {
-// 		actions = append(actions, &a)
-// 	}
-
-// 	if err := b.Close(); err != nil {
-// 		return nil, err
-// 	}
-
-// 	return actions, nil
-// }

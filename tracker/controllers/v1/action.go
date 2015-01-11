@@ -5,14 +5,15 @@ import (
 	"net/http"
 	"time"
 
+	"strconv"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/gocql/gocql"
 	"github.com/gocraft/web"
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
-	"strconv"
 )
 
-// Get ...
+// VisitsGETHandler ...
 func (bc *BaseContext) VisitsGETHandler(w web.ResponseWriter, r *web.Request) {
 	r.ParseForm()
 
@@ -65,11 +66,32 @@ func (bc *BaseContext) VisitsGETHandler(w web.ResponseWriter, r *web.Request) {
 	}
 
 	message := ""
-	if trackRequest.IsNewVisit() {
-		trackRequest.VisitID = gocql.TimeUUID().String()
-		message = "New visit"
+	incomingVisitID := trackRequest.VisitID
+
+	if trackRequest.IsValidVisitID() {
+		message = "Valid visit id"
+
+		visitIDUUID, err := trackRequest.ParseVisitID()
+		if err != nil {
+			bc.HTTPError(w, err, "Unexpected error.", http.StatusInternalServerError)
+			return
+		}
+
+		isActiveVisit, err := bc.RepositoryManager.
+			VisitActions.
+			IsActiveVisit(visitIDUUID)
+		if err != nil {
+			bc.HTTPError(w, err, "Unexpected error.", http.StatusInternalServerError)
+			return
+		}
+
+		if !isActiveVisit {
+			trackRequest.VisitID = gocql.TimeUUID().String()
+			message = "Outdated visit id"
+		}
 	} else {
-		message = "Existing visit"
+		trackRequest.VisitID = gocql.TimeUUID().String()
+		message = "Missing or invalid visit id"
 	}
 
 	trackRequestBytes, err := json.Marshal(trackRequest)
@@ -84,8 +106,9 @@ func (bc *BaseContext) VisitsGETHandler(w web.ResponseWriter, r *web.Request) {
 	}
 
 	bc.Logger.WithFields(logrus.Fields{
-		"url":     trackRequest.PageURL,
-		"visitId": trackRequest.VisitID,
+		"url":             trackRequest.PageURL,
+		"incomingVisitID": incomingVisitID,
+		"outgoingVisitID": trackRequest.VisitID,
 	}).Info(message)
 
 	w.Header().Set("Access-Control-Allow-Credentials", "true")

@@ -1,15 +1,17 @@
 package repositories
 
 import (
+	"time"
+
 	"github.com/gocql/gocql"
 	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
 	"github.com/relops/cqlr"
 )
 
 const (
-	// VisitActionColumnFamily ...
-	VisitActionColumnFamily = "visit_actions"
-	allFields               = `
+	// VisitActionsColumnFamily ...
+	VisitActionsColumnFamily = "visit_actions"
+	allFields                = `
 		id, ip, visit_id, site_id, referrer, language, browser_name,
 		browser_version, browser_major_version, browser_user_agent,
 		browser_platform, browser_cookie, browser_plugin_java, browser_is_online,
@@ -26,15 +28,15 @@ const (
 	`
 )
 
-// VisitActionRepository ...
-type VisitActionRepository struct {
+// VisitActionsRepository ...
+type VisitActionsRepository struct {
 	Repository
 }
 
 // Insert ...
-func (r *VisitActionRepository) Insert(action *models.ActionEntity) error {
+func (r *VisitActionsRepository) Insert(action *models.ActionEntity) error {
 	cql := `
-	INSERT INTO ` + VisitActionColumnFamily + `
+	INSERT INTO ` + VisitActionsColumnFamily + `
 	(
 		` + allFields + `
 	)
@@ -47,11 +49,34 @@ func (r *VisitActionRepository) Insert(action *models.ActionEntity) error {
 	return cqlr.Bind(cql, action).Exec(r.Repository.Cassandra)
 }
 
-// Find ...
-func (r *VisitActionRepository) Find() ([]*models.ActionEntity, error) {
-	cql := `SELECT ` + allFields + ` FROM ` + VisitActionColumnFamily
+// IsActiveVisit ...
+func (r *VisitActionsRepository) IsActiveVisit(visitID gocql.UUID) (bool, error) {
+	nbOfActions := 0
 
-	query := r.Repository.Cassandra.Query(cql, "me").Consistency(gocql.One)
+	cql := `SELECT COUNT(*) FROM ` + VisitActionsColumnFamily +
+		` WHERE visit_id = ? AND made_at >= ? LIMIT 1`
+
+	iter := r.Repository.Cassandra.Query(
+		cql,
+		visitID,
+		time.Now().Add(-models.MinVisitDuration),
+	).Consistency(gocql.One).
+		Iter()
+
+	iter.Scan(&nbOfActions)
+
+	if err := iter.Close(); err != nil {
+		return false, err
+	}
+
+	return nbOfActions == 1, nil
+}
+
+// Find ...
+func (r *VisitActionsRepository) Find() ([]*models.ActionEntity, error) {
+	cql := `SELECT ` + allFields + ` FROM ` + VisitActionsColumnFamily
+
+	query := r.Repository.Cassandra.Query(cql).Consistency(gocql.One)
 
 	b := cqlr.BindQuery(query)
 
