@@ -2,7 +2,7 @@
 <config>
     <server>
         <host>127.0.0.1</host>
-        <port>8900</port>
+        <port>9011</port>
     </server>
     <logger>
         <nb-of-channels>10000</nb-of-channels>

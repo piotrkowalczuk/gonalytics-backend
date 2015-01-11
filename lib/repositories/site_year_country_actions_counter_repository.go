@@ -1,10 +1,21 @@
 package repositories
 
-import "time"
+import (
+	"time"
+
+	"github.com/gocql/gocql"
+	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
+)
 
 const (
 	// SiteYearCountryActionsCounterColumnFamily ...
 	SiteYearCountryActionsCounterColumnFamily = "site_year_country_actions_counter"
+	// SiteYearCountryActionsFields ...
+	SiteYearCountryActionsFields = `
+        site_id, nb_of_actions, location_country_name, 
+        location_country_code, location_country_id,
+        made_at_year
+    `
 )
 
 // SiteYearCountryActionsCounterRepository ...
@@ -28,4 +39,40 @@ func (sycacr *SiteYearCountryActionsCounterRepository) Increment(siteID int64, c
 		Cassandra.
 		Query(cql, siteID, countryName, countryCode, countryID, date.Year()).
 		Exec()
+}
+
+// Find ...
+func (sycacr *SiteYearCountryActionsCounterRepository) Find(
+	siteID int64,
+	date time.Time,
+) ([]*models.SiteYearCountryActionsCounterEntity, error) {
+	cql := `SELECT ` + SiteYearCountryActionsFields +
+		` FROM ` + SiteYearCountryActionsCounterColumnFamily +
+		` WHERE site_id = ? AND made_at_year = ?`
+
+	iter := sycacr.Repository.
+		Cassandra.
+		Query(cql, siteID, date.Year()).
+		Consistency(gocql.One).
+		Iter()
+
+	var counter models.SiteYearCountryActionsCounterEntity
+	counters := []*models.SiteYearCountryActionsCounterEntity{}
+
+	for iter.Scan(
+		&counter.SiteID,
+		&counter.NbOfActions,
+		&counter.LocationCountryName,
+		&counter.LocationCountryCode,
+		&counter.LocationCountryID,
+		&counter.MadeAtYear,
+	) {
+		counters = append(counters, &counter)
+	}
+
+	if err := iter.Close(); err != nil {
+		return nil, err
+	}
+
+	return counters, nil
 }

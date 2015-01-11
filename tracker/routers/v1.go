@@ -6,6 +6,7 @@ import (
 	"github.com/piotrkowalczuk/gonalytics-backend/tracker/middleware"
 )
 
+// GetRouterV1 ...
 func GetRouterV1() *web.Router {
 	return web.New(CtrlV1.BaseContext{}).
 		Middleware(middleware.ExecutionDurationMiddleware).

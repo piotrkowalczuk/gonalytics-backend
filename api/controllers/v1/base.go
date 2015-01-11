@@ -1,35 +1,44 @@
 package v1
 
 import (
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/logs"
+	"encoding/json"
+	"net/http"
+
+	"github.com/Sirupsen/logrus"
+	"github.com/gocraft/web"
 	"github.com/piotrkowalczuk/gonalytics-backend/lib"
-	"github.com/piotrkowalczuk/gonalytics-backend/services"
 )
 
-// BaseController contains common properties accross multiple controllerss
-type BaseController struct {
-	beego.Controller
+const (
+	// AggregateByDay ...
+	AggregateByDay = "day"
+	// AggregateByMonth ...
+	AggregateByMonth = "month"
+	// AggregateByYear ...
+	AggregateByYear = "year"
+)
+
+// BaseContext contains common properties accross multiple handlers
+type BaseContext struct {
 	RepositoryManager lib.RepositoryManager
-	Log               *logs.BeeLogger
-	ResponseData      interface{}
+	Logger            *logrus.Logger
+	Response          interface{}
 }
 
-// Prepare is called prior to the basecontrollers method
-func (bc *BaseController) Prepare() {
-	bc.Log = services.Logger
+// HTTPError ...
+func (bc *BaseContext) HTTPError(rw web.ResponseWriter, err error, message string, code int) {
+	bc.Logger.Error(err.Error())
+	http.Error(rw, message, code)
 }
 
-// Finish is called once the basecontrollers method completes
-func (bc *BaseController) Finish() {
-	bc.Data["json"] = &bc.ResponseData
-	bc.ServeJson()
-}
-
-// AbortIf return response if only err is not nil.
-func (bc *BaseController) AbortIf(err error, message string, statusCode int) {
+// ServeJSON ...
+func (bc *BaseContext) ServeJSON(rw web.ResponseWriter, result interface{}) {
+	js, err := json.Marshal(result)
 	if err != nil {
-		bc.Log.Error(err.Error())
-		bc.Ctx.Abort(statusCode, message)
+		bc.HTTPError(rw, err, "Unexpected error.", http.StatusInternalServerError)
+		return
 	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	rw.Write(js)
 }

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gocraft/web"
-	CtrlV1 "github.com/piotrkowalczuk/gonalytics-backend/tracker/controllers/v1"
+	CtrlV1 "github.com/piotrkowalczuk/gonalytics-backend/api/controllers/v1"
 )
 
 // ExecutionDurationMiddleware ...

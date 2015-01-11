@@ -4,7 +4,6 @@
         <concurency>1</concurency>
     </worker>
     <logger>
-        <nb-of-channels>10000</nb-of-channels>
         <adapter>console</adapter>
         <settings></settings>
     </logger>

@@ -1,10 +1,20 @@
 package repositories
 
-import "time"
+import (
+	"time"
+
+	"github.com/gocql/gocql"
+	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
+)
 
 const (
 	// SiteYearBrowserActionsCounterColumnFamily ...
 	SiteYearBrowserActionsCounterColumnFamily = "site_year_browser_actions_counter"
+	// SiteYearBrowserActionsFields ...
+	SiteYearBrowserActionsFields = `
+        site_id, nb_of_actions, browser_name, browser_version,
+        made_at_year
+    `
 )
 
 // SiteYearBrowserActionsCounterRepository ...
@@ -31,4 +41,39 @@ func (sybacr *SiteYearBrowserActionsCounterRepository) Increment(
 		Cassandra.
 		Query(cql, siteID, browserName, browserVersion, date.Year()).
 		Exec()
+}
+
+// Find ...
+func (sybacr *SiteYearBrowserActionsCounterRepository) Find(
+	siteID int64,
+	date time.Time,
+) ([]*models.SiteYearBrowserActionsCounterEntity, error) {
+	cql := `SELECT ` + SiteYearBrowserActionsFields +
+		` FROM ` + SiteYearBrowserActionsCounterColumnFamily +
+		` WHERE site_id = ? AND made_at_year = ?`
+
+	iter := sybacr.Repository.
+		Cassandra.
+		Query(cql, siteID, date.Year()).
+		Consistency(gocql.One).
+		Iter()
+
+	var counter models.SiteYearBrowserActionsCounterEntity
+	counters := []*models.SiteYearBrowserActionsCounterEntity{}
+
+	for iter.Scan(
+		&counter.SiteID,
+		&counter.NbOfActions,
+		&counter.BrowserName,
+		&counter.BrowserVersion,
+		&counter.MadeAtYear,
+	) {
+		counters = append(counters, &counter)
+	}
+
+	if err := iter.Close(); err != nil {
+		return nil, err
+	}
+
+	return counters, nil
 }

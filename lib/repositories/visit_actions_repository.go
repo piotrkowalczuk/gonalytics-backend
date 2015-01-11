@@ -11,7 +11,8 @@ import (
 const (
 	// VisitActionsColumnFamily ...
 	VisitActionsColumnFamily = "visit_actions"
-	allFields                = `
+	// VisitActionsFields ...
+	VisitActionsFields = `
 		id, ip, visit_id, site_id, referrer, language, browser_name,
 		browser_version, browser_major_version, browser_user_agent,
 		browser_platform, browser_cookie, browser_plugin_java, browser_is_online,
@@ -38,7 +39,7 @@ func (r *VisitActionsRepository) Insert(action *models.ActionEntity) error {
 	cql := `
 	INSERT INTO ` + VisitActionsColumnFamily + `
 	(
-		` + allFields + `
+		` + VisitActionsFields + `
 	)
 	VALUES (
 		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
@@ -74,7 +75,7 @@ func (r *VisitActionsRepository) IsActiveVisit(visitID gocql.UUID) (bool, error)
 
 // Find ...
 func (r *VisitActionsRepository) Find() ([]*models.ActionEntity, error) {
-	cql := `SELECT ` + allFields + ` FROM ` + VisitActionsColumnFamily
+	cql := `SELECT ` + VisitActionsFields + ` FROM ` + VisitActionsColumnFamily
 
 	query := r.Repository.Cassandra.Query(cql).Consistency(gocql.One)
 
