@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS gonalytics.visit_events
     name varchar,
     value varchar,
     PRIMARY KEY (visit_id, made_at),
-)
+);
 
 CREATE TABLE IF NOT EXISTS gonalytics.metric_day_visits_counter 
 (
@@ -20,26 +20,26 @@ CREATE TABLE IF NOT EXISTS gonalytics.metric_day_visits_counter
     made_at_year int,
     count counter,
     PRIMARY KEY ((dimensionsNames, made_at_year, made_at_month, made_at_day), dimensionsValues)
-)
+);
 
 CREATE TABLE IF NOT EXISTS gonalytics.metric_month_visits_counter 
 (
     dimensionsNames varchar,
     dimensionsValues varchar,
-    made_at_day int,
+    made_at_month int,
     made_at_year int,
     count counter,
     PRIMARY KEY ((dimensionsNames, made_at_year, made_at_month), dimensionsValues)
-)
+);
 
 CREATE TABLE IF NOT EXISTS gonalytics.metric_year_visits_counter 
 (
     dimensionsNames varchar,
     dimensionsValues varchar,
-    made_at_day int,
+    made_at_year int,
     count counter,
     PRIMARY KEY ((dimensionsNames, made_at_year), dimensionsValues)
-)
+);
 
 CREATE TABLE IF NOT EXISTS gonalytics.metric_day_actions_counter 
 (
@@ -50,26 +50,26 @@ CREATE TABLE IF NOT EXISTS gonalytics.metric_day_actions_counter
     made_at_year int,
     count counter,
     PRIMARY KEY ((dimensionsNames, made_at_year, made_at_month, made_at_day), dimensionsValues)
-)
+);
 
 CREATE TABLE IF NOT EXISTS gonalytics.metric_month_actions_counter 
 (
     dimensionsNames varchar,
     dimensionsValues varchar,
-    made_at_day int,
+    made_at_month int,
     made_at_year int,
     count counter,
     PRIMARY KEY ((dimensionsNames, made_at_year, made_at_month), dimensionsValues)
-)
+);
 
 CREATE TABLE IF NOT EXISTS gonalytics.metric_year_actions_counter 
 (
     dimensionsNames varchar,
     dimensionsValues varchar,
-    made_at_day int,
+    made_at_year int,
     count counter,
     PRIMARY KEY ((dimensionsNames, made_at_year), dimensionsValues)
-)
+);
 
 CREATE TABLE IF NOT EXISTS gonalytics.visit_actions
 (

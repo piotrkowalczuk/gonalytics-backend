@@ -67,8 +67,8 @@ type CassandraConfig struct {
 func (cc CassandraConfig) GetHosts() []string {
 	hosts := make([]string, len(cc.Hosts))
 
-	for _, host := range cc.Hosts {
-		hosts = append(hosts, host.Host)
+	for index, host := range cc.Hosts {
+		hosts[index] = host.Host
 	}
 
 	return hosts
