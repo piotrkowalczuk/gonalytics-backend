@@ -29,7 +29,9 @@ Commands
 
 Web API
 --------
-Public API documentation is available at http://docs.gonalyticsbackend.apiary.io. The documentation is integrated into the repository. The current documentation is a reflection of the `apiary.apib` file.
+Public API documentation:
+* CRUD API: http://docs.gonalyticsapi.apiary.io/
+* Tracker: http://docs.gonalyticstracker.apiary.io/
 
 Dependencies
 ------------
