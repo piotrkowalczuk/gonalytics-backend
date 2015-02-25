@@ -17,7 +17,6 @@ const (
 	clientName        = "actions-worker-1"
 	consumerGroupName = "actions-workers"
 	topicName         = "actions"
-	brokerHost        = "localhost:9092"
 )
 
 // ActionsWorker ...
@@ -28,6 +27,8 @@ type ActionsWorker struct {
 	GeoIP             *geoip2.Reader
 	Logger            *logrus.Logger
 	RepositoryManager lib.RepositoryManager
+
+	BrokerHost string
 
 	startingOffset int64
 	broker         *sarama.Broker
@@ -69,7 +70,7 @@ func (aw *ActionsWorker) Start() {
 }
 
 func (aw *ActionsWorker) initBroker() {
-	aw.broker = sarama.NewBroker(brokerHost)
+	aw.broker = sarama.NewBroker(aw.BrokerHost)
 
 	err := aw.broker.Open(nil)
 	aw.panicIf(err, "Kafka broker initialization failed.")
@@ -119,6 +120,10 @@ func (aw *ActionsWorker) checkIfAwailableOffsets() {
 
 	aw.panicIf(err, "Kafka broker available offsets request failed.")
 	aw.breakIf(offsetsResponse.Blocks[topicName][0].Err)
+
+	aw.Logger.WithFields(logrus.Fields{
+		"offsets": offsetsResponse.Blocks[topicName][0].Offsets,
+	}).Info("Kafka available offsets fetched successfully.")
 }
 
 func (aw *ActionsWorker) fetchAndSetStartingOffset() {
@@ -188,7 +193,6 @@ func (aw *ActionsWorker) consume(callbacks ...ConsumedFunc) {
 }
 
 func (aw *ActionsWorker) saveToCassandra(trackRequest *models.TrackRequest) error {
-	now := time.Now()
 	actionCreator := lib.NewActionCreator(aw.GeoIP)
 
 	action, err := actionCreator.Create(trackRequest)
@@ -196,124 +200,5 @@ func (aw *ActionsWorker) saveToCassandra(trackRequest *models.TrackRequest) erro
 		return err
 	}
 
-	err = aw.RepositoryManager.VisitActions.Insert(action)
-	if err != nil {
-		return err
-	}
-
-	if trackRequest.InitializeVisit {
-		// COUNTRY PRE AGREGATION
-		if err = aw.RepositoryManager.SiteDayCountryVisitsCounter.Increment(
-			action.SiteID,
-			action.LocationCountryName,
-			action.LocationCountryCode,
-			action.LocationCountryID,
-			now,
-		); err != nil {
-			return err
-		}
-
-		if err = aw.RepositoryManager.SiteMonthCountryVisitsCounter.Increment(
-			action.SiteID,
-			action.LocationCountryName,
-			action.LocationCountryCode,
-			action.LocationCountryID,
-			now,
-		); err != nil {
-			return err
-		}
-
-		if err := aw.RepositoryManager.SiteYearCountryVisitsCounter.Increment(
-			action.SiteID,
-			action.LocationCountryName,
-			action.LocationCountryCode,
-			action.LocationCountryID,
-			now,
-		); err != nil {
-			return err
-		}
-
-		// BROWSER PRE AGREGATION
-		if err = aw.RepositoryManager.SiteDayBrowserVisitsCounter.Increment(
-			action.SiteID,
-			action.BrowserName,
-			action.BrowserVersion,
-			now,
-		); err != nil {
-			return err
-		}
-
-		if err = aw.RepositoryManager.SiteMonthBrowserVisitsCounter.Increment(
-			action.SiteID,
-			action.BrowserName,
-			action.BrowserVersion,
-			now,
-		); err != nil {
-			return err
-		}
-
-		return aw.RepositoryManager.SiteYearBrowserVisitsCounter.Increment(
-			action.SiteID,
-			action.BrowserName,
-			action.BrowserVersion,
-			now,
-		)
-	}
-
-	// COUNTRY PRE AGREGATION
-	if err = aw.RepositoryManager.SiteDayCountryActionsCounter.Increment(
-		action.SiteID,
-		action.LocationCountryName,
-		action.LocationCountryCode,
-		action.LocationCountryID,
-		now,
-	); err != nil {
-		return err
-	}
-
-	if err = aw.RepositoryManager.SiteMonthCountryActionsCounter.Increment(
-		action.SiteID,
-		action.LocationCountryName,
-		action.LocationCountryCode,
-		action.LocationCountryID,
-		now,
-	); err != nil {
-		return err
-	}
-
-	if err := aw.RepositoryManager.SiteYearCountryActionsCounter.Increment(
-		action.SiteID,
-		action.LocationCountryName,
-		action.LocationCountryCode,
-		action.LocationCountryID,
-		now,
-	); err != nil {
-		return err
-	}
-
-	// BROWSER PRE AGREGATION
-	if err = aw.RepositoryManager.SiteDayBrowserActionsCounter.Increment(
-		action.SiteID,
-		action.BrowserName,
-		action.BrowserVersion,
-		now,
-	); err != nil {
-		return err
-	}
-
-	if err = aw.RepositoryManager.SiteMonthBrowserActionsCounter.Increment(
-		action.SiteID,
-		action.BrowserName,
-		action.BrowserVersion,
-		now,
-	); err != nil {
-		return err
-	}
-
-	return aw.RepositoryManager.SiteYearBrowserActionsCounter.Increment(
-		action.SiteID,
-		action.BrowserName,
-		action.BrowserVersion,
-		now,
-	)
+	return aw.RepositoryManager.VisitActions.Insert(action)
 }

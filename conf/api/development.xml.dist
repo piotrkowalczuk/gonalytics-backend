@@ -11,7 +11,7 @@
     <cassandra>
         <keyspace>gonalytics</keyspace>
         <hosts>
-            <host>127.0.0.1</host>
+            <host>cassandra</host>
         </hosts>
     </cassandra>
 </config>

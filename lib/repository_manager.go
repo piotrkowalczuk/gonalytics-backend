@@ -5,20 +5,4 @@ import "github.com/piotrkowalczuk/gonalytics-backend/lib/repositories"
 // RepositoryManager ...
 type RepositoryManager struct {
 	VisitActions repositories.VisitActionsRepository
-	// Actions by browser
-	SiteDayBrowserActionsCounter   repositories.SiteDayBrowserCounterRepository
-	SiteMonthBrowserActionsCounter repositories.SiteMonthBrowserCounterRepository
-	SiteYearBrowserActionsCounter  repositories.SiteYearBrowserCounterRepository
-	// Visits by browser
-	SiteDayBrowserVisitsCounter   repositories.SiteDayBrowserCounterRepository
-	SiteMonthBrowserVisitsCounter repositories.SiteMonthBrowserCounterRepository
-	SiteYearBrowserVisitsCounter  repositories.SiteYearBrowserCounterRepository
-	// Actions by country
-	SiteDayCountryActionsCounter   repositories.SiteDayCountryCounterRepository
-	SiteMonthCountryActionsCounter repositories.SiteMonthCountryCounterRepository
-	SiteYearCountryActionsCounter  repositories.SiteYearCountryCounterRepository
-	// Visits by country
-	SiteDayCountryVisitsCounter   repositories.SiteDayCountryCounterRepository
-	SiteMonthCountryVisitsCounter repositories.SiteMonthCountryCounterRepository
-	SiteYearCountryVisitsCounter  repositories.SiteYearCountryCounterRepository
 }

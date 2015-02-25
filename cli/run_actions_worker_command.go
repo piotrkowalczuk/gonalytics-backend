@@ -33,6 +33,7 @@ func NewRunActionsWorkerCommand() *cobra.Command {
 				GeoIP:             services.GeoIP,
 				Cassandra:         services.Cassandra,
 				RepositoryManager: services.RepositoryManager,
+				BrokerHost:        services.ActionsWorkerConfig.Kafka.ConnectionString,
 			}
 
 			actionsWorker.Start()

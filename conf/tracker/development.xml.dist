@@ -13,7 +13,7 @@
         <path>data/GeoLite2-City.mmdb</path>
     </geo-ip>
     <kafka>
-        <connection-string>localhost:9092</connection-string>
+        <connection-string>kafka:9092</connection-string>
         <publishers>
             <action>
                 <topic>actions</topic>
@@ -24,7 +24,7 @@
     <cassandra>
         <keyspace>gonalytics</keyspace>
         <hosts>
-            <host>127.0.0.1</host>
+            <host>cassandra</host>
         </hosts>
     </cassandra>
 </config>
