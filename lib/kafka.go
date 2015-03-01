@@ -19,7 +19,7 @@ func (kp *KafkaPublisher) PublishAction(message string) error {
 	defer producer.Close()
 
 	select {
-	case producer.Input() <- &sarama.MessageToSend{
+	case producer.Input() <- &sarama.ProducerMessage{
 		Topic: "actions",
 		Key:   nil,
 		Value: sarama.StringEncoder(message),

@@ -30,23 +30,24 @@ type ActionsWorker struct {
 
 	BrokerHost string
 
-	startingOffset int64
-	broker         *sarama.Broker
-	consumer       *sarama.Consumer
+	startingOffset    int64
+	broker            *sarama.Broker
+	consumer          *sarama.Consumer
+	partitionConsumer *sarama.PartitionConsumer
 }
 
 // ConsumedFunc ...
 type ConsumedFunc func(trackRequest *models.TrackRequest) error
 
 func (aw *ActionsWorker) panicIf(err error, message string) {
-	if err != nil && err != sarama.NoError {
+	if err != nil && err != sarama.ErrNoError {
 		aw.Logger.Error(message)
 		panic(err)
 	}
 }
 
 func (aw *ActionsWorker) breakIf(err error) {
-	if err != nil && err != sarama.NoError {
+	if err != nil && err != sarama.ErrNoError {
 		aw.Logger.Error(err.Error())
 		os.Exit(1)
 	}
@@ -62,7 +63,7 @@ func (aw *ActionsWorker) Start() {
 	aw.fetchAndSetStartingOffset()
 
 	aw.initConsumer()
-	defer aw.consumer.Close()
+	defer aw.partitionConsumer.Close()
 
 	aw.consume(
 		aw.saveToCassandra,
@@ -78,29 +79,37 @@ func (aw *ActionsWorker) initBroker() {
 
 func (aw *ActionsWorker) initConsumer() {
 	consumerConfig := &sarama.ConsumerConfig{
+		MinFetchSize: 1,
+		MaxWaitTime:  250 * time.Millisecond,
+	}
+
+	partitionConsumerConfig := &sarama.PartitionConsumerConfig{
 		DefaultFetchSize: 32768,
-		MinFetchSize:     1,
-		MaxWaitTime:      250 * time.Millisecond,
-		EventBufferSize:  16,
 		OffsetMethod:     sarama.OffsetMethodManual,
 		OffsetValue:      aw.startingOffset + 1,
 	}
 
 	consumer, err := sarama.NewConsumer(
 		aw.KafkaClient,
-		topicName,
-		0,
-		consumerGroupName,
 		consumerConfig,
 	)
 
 	aw.panicIf(err, "Kafka consumer initialization failed.")
+
+	partitionConsumer, err := consumer.ConsumePartition(
+		topicName,
+		0,
+		partitionConsumerConfig,
+	)
+
+	aw.panicIf(err, "Kafka partition consumer initialization failed.")
 
 	aw.Logger.WithFields(logrus.Fields{
 		"offset": aw.startingOffset,
 	}).Info("Kafka consumer initialized successfully.")
 
 	aw.consumer = consumer
+	aw.partitionConsumer = partitionConsumer
 }
 
 func (aw *ActionsWorker) logNumberOfTopics() {
@@ -140,11 +149,11 @@ func (aw *ActionsWorker) fetchAndSetStartingOffset() {
 func (aw *ActionsWorker) consume(callbacks ...ConsumedFunc) {
 	for {
 		select {
-		case event := <-aw.consumer.Events():
-			if event.Err != nil {
-				panic(event.Err)
+		case err := <-aw.partitionConsumer.Errors():
+			if err != nil {
+				panic(err)
 			}
-
+		case event := <-aw.partitionConsumer.Messages():
 			trackRequest := &models.TrackRequest{}
 			err := json.Unmarshal(event.Value, trackRequest)
 
@@ -177,7 +186,7 @@ func (aw *ActionsWorker) consume(callbacks ...ConsumedFunc) {
 			} else if response == nil {
 				aw.Logger.Error("Brocker returns no response")
 				return
-			} else if response.Errors[topicName][0] != sarama.NoError {
+			} else if response.Errors[topicName][0] != sarama.ErrNoError {
 				aw.Logger.Error(response.Errors[topicName][0])
 				return
 			}
