@@ -160,12 +160,14 @@ func (aw *ActionsWorker) fetchAndSetStartingOffset() {
 				aw.Logger.Error(response.Errors[topicName][0])
 				return
 			}
+
+			aw.startingOffset = 0
 		} else {
 			aw.breakIf(offsetFetchResponse.Blocks[topicName][0].Err)
 		}
+	} else {
+		aw.startingOffset = offsetFetchResponse.Blocks[topicName][0].Offset
 	}
-
-	aw.startingOffset = offsetFetchResponse.Blocks[topicName][0].Offset
 
 	aw.Logger.WithFields(logrus.Fields{
 		"startingOffset": aw.startingOffset,
