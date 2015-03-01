@@ -141,9 +141,35 @@ func (aw *ActionsWorker) fetchAndSetStartingOffset() {
 	offsetFetchResponse, err := aw.broker.FetchOffset(clientName, &offsetFetchRequest)
 
 	aw.panicIf(err, "Kafka broker fetching current offset request failed.")
-	aw.breakIf(offsetFetchResponse.Blocks[topicName][0].Err)
+
+	err = offsetFetchResponse.Blocks[topicName][0].Err
+	if err != sarama.ErrNoError {
+		if err == sarama.ErrUnknownTopicOrPartition {
+			offsetCommitRequest := &sarama.OffsetCommitRequest{ConsumerGroup: consumerGroupName}
+			offsetCommitRequest.AddBlock(topicName, 0, 0, sarama.ReceiveTime, "")
+
+			response, err := aw.broker.CommitOffset(clientName, offsetCommitRequest)
+
+			if err != nil {
+				aw.Logger.Error(err)
+				return
+			} else if response == nil {
+				aw.Logger.Error("Brocker returns no response")
+				return
+			} else if response.Errors[topicName][0] != sarama.ErrNoError {
+				aw.Logger.Error(response.Errors[topicName][0])
+				return
+			}
+		} else {
+			aw.breakIf(offsetFetchResponse.Blocks[topicName][0].Err)
+		}
+	}
 
 	aw.startingOffset = offsetFetchResponse.Blocks[topicName][0].Offset
+
+	aw.Logger.WithFields(logrus.Fields{
+		"startingOffset": aw.startingOffset,
+	}).Info("Kafka current offsets fetched successfully.")
 }
 
 func (aw *ActionsWorker) consume(callbacks ...ConsumedFunc) {
