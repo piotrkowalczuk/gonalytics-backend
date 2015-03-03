@@ -31,6 +31,17 @@ type TrackerConfig struct {
 // ActionsWorkerConfig ...
 type ActionsWorkerConfig struct {
 	Config
+	Worker  WorkerConfig `xml:"worker"`
+	Metrics []struct {
+		Metric MetricConfig `xml:"metric"`
+	} `xml:"metrics"`
+}
+
+// MetricConfig ...
+type MetricConfig struct {
+	Dimensions []struct {
+		Dimension Dimension `xml:"dimension"`
+	} `xml:"dimensions"`
 }
 
 // ServerConfig ...

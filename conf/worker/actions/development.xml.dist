@@ -3,6 +3,20 @@
     <worker>
         <concurency>1</concurency>
     </worker>
+    <metrics>
+        <metric>
+            <dimensions>
+                <dimension>
+                    <name>browser</name>
+                    <condition type="equal">chrome</condition>
+                </dimension>
+                <dimension>
+                    <name>language</name>
+                    <condition type="equal">pl</condition>
+                </dimension>
+            </dimensions>
+        </metric>
+    </metrics>
     <logger>
         <adapter>console</adapter>
         <settings></settings>
