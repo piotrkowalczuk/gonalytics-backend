@@ -2,7 +2,61 @@ DROP KEYSPACE IF EXISTS gonalytics;
 
 CREATE KEYSPACE gonalytics WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
 
-CREATE TABLE IF NOT EXISTS gonalytics.metric_day_counter
+CREATE TABLE IF NOT EXISTS gonalytics.metric_day_by_minute_counter
+(
+    dimensions_names varchar,
+    dimensions_values varchar,
+    made_at_minute int,
+    made_at_day int,
+    made_at_month int,
+    made_at_year int,
+    count counter,
+    PRIMARY KEY ((dimensions_names, dimensions_values, made_at_year, made_at_month, made_at_day), made_at_minute)
+);
+
+CREATE TABLE IF NOT EXISTS gonalytics.metric_month_by_day_counter
+(
+    dimensions_names varchar,
+    dimensions_values varchar,
+    made_at_day int,
+    made_at_month int,
+    made_at_year int,
+    count counter,
+    PRIMARY KEY ((dimensions_names, dimensions_values, made_at_year, made_at_month), made_at_day)
+);
+
+CREATE TABLE IF NOT EXISTS gonalytics.metric_year_by_month_counter
+(
+    dimensions_names varchar,
+    dimensions_values varchar,
+    made_at_month int,
+    made_at_year int,
+    count counter,
+    PRIMARY KEY ((dimensions_names, dimensions_values, made_at_year), made_at_month)
+);
+
+CREATE TABLE IF NOT EXISTS gonalytics.metric_by_year_counter
+(
+    dimensions_names varchar,
+    dimensions_values varchar,
+    made_at_year int,
+    count counter,
+    PRIMARY KEY ((dimensions_names, dimensions_values), made_at_year)
+);
+
+CREATE TABLE IF NOT EXISTS gonalytics.metric_minute_by_value_counter
+(
+    dimensions_names varchar,
+    dimensions_values varchar,
+    made_at_minute int,
+    made_at_day int,
+    made_at_month int,
+    made_at_year int,
+    count counter,
+    PRIMARY KEY ((dimensions_names, made_at_year, made_at_month, made_at_day, made_at_minute), dimensions_values)
+);
+
+CREATE TABLE IF NOT EXISTS gonalytics.metric_day_by_value_counter
 (
     dimensions_names varchar,
     dimensions_values varchar,
@@ -13,7 +67,7 @@ CREATE TABLE IF NOT EXISTS gonalytics.metric_day_counter
     PRIMARY KEY ((dimensions_names, made_at_year, made_at_month, made_at_day), dimensions_values)
 );
 
-CREATE TABLE IF NOT EXISTS gonalytics.metric_month_counter
+CREATE TABLE IF NOT EXISTS gonalytics.metric_month_by_value_counter
 (
     dimensions_names varchar,
     dimensions_values varchar,
@@ -23,7 +77,7 @@ CREATE TABLE IF NOT EXISTS gonalytics.metric_month_counter
     PRIMARY KEY ((dimensions_names, made_at_year, made_at_month), dimensions_values)
 );
 
-CREATE TABLE IF NOT EXISTS gonalytics.metric_year_counter
+CREATE TABLE IF NOT EXISTS gonalytics.metric_year_by_value_counter
 (
     dimensions_names varchar,
     dimensions_values varchar,
