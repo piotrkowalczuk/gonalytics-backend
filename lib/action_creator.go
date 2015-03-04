@@ -11,7 +11,7 @@ import (
 // ActionCreator ...
 type ActionCreator struct {
 	geoIP        *geoip2.Reader
-	trackRequest *models.TrackRequest
+	trackRequest *TrackRequest
 }
 
 // NewActionCreator ...
@@ -22,7 +22,7 @@ func NewActionCreator(geoIP *geoip2.Reader) *ActionCreator {
 }
 
 // Create creates visit object based on given track request.
-func (ac *ActionCreator) Create(trackRequest *models.TrackRequest) (*models.ActionEntity, error) {
+func (ac *ActionCreator) Create(trackRequest *TrackRequest) (*models.ActionEntity, error) {
 	ac.trackRequest = trackRequest
 	location, err := ac.createLocation()
 
@@ -95,7 +95,6 @@ func (ac *ActionCreator) Create(trackRequest *models.TrackRequest) (*models.Acti
 
 func (ac *ActionCreator) createLocation() (*models.Location, error) {
 	geoLocation, err := ac.geoIP.City(net.ParseIP(ac.trackRequest.GetRequestIP()))
-
 	if err != nil {
 		return nil, err
 	}

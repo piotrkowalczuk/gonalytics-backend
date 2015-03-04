@@ -1,5 +1,7 @@
 package lib
 
+import "encoding/xml"
+
 const (
 	// APIConfigConsumer ...
 	APIConfigConsumer = "api"
@@ -31,17 +33,26 @@ type TrackerConfig struct {
 // ActionsWorkerConfig ...
 type ActionsWorkerConfig struct {
 	Config
-	Worker  WorkerConfig `xml:"worker"`
-	Metrics []struct {
-		Metric MetricConfig `xml:"metric"`
-	} `xml:"metrics"`
+	Worker       WorkerConfig `xml:"worker"`
+	MetricsGroup XMLMetrics   `xml:"metrics"`
 }
 
-// MetricConfig ...
-type MetricConfig struct {
-	Dimensions []struct {
-		Dimension Dimension `xml:"dimension"`
-	} `xml:"dimensions"`
+// XMLMetric ...
+type XMLMetric struct {
+	XMLName         xml.Name      `xml:"metric"`
+	DimensionsGroup XMLDimensions `xml:"dimensions"`
+}
+
+// XMLMetrics ...
+type XMLMetrics struct {
+	XMLName xml.Name    `xml:"metrics"`
+	Metrics []XMLMetric `xml:"metric"`
+}
+
+// XMLDimensions ...
+type XMLDimensions struct {
+	XMLName    xml.Name    `xml:"dimensions"`
+	Dimensions []Dimension `xml:"dimension"`
 }
 
 // ServerConfig ...

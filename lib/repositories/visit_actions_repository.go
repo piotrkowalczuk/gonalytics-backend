@@ -32,6 +32,7 @@ const (
 // VisitActionsRepository ...
 type VisitActionsRepository struct {
 	Repository
+	ColumnFamily string
 }
 
 // Insert ...

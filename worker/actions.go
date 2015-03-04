@@ -10,7 +10,6 @@ import (
 	"github.com/gocql/gocql"
 	geoip2 "github.com/oschwald/geoip2-golang"
 	"github.com/piotrkowalczuk/gonalytics-backend/lib"
-	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
 )
 
 const (
@@ -37,7 +36,7 @@ type ActionsWorker struct {
 }
 
 // ConsumedFunc ...
-type ConsumedFunc func(trackRequest *models.TrackRequest) error
+type ConsumedFunc func(trackRequest *lib.TrackRequest) error
 
 func (aw *ActionsWorker) panicIf(err error, message string) {
 	if err != nil && err != sarama.ErrNoError {
@@ -182,7 +181,7 @@ func (aw *ActionsWorker) consume(callbacks ...ConsumedFunc) {
 				panic(err)
 			}
 		case event := <-aw.partitionConsumer.Messages():
-			trackRequest := &models.TrackRequest{}
+			trackRequest := &lib.TrackRequest{}
 			err := json.Unmarshal(event.Value, trackRequest)
 
 			if err != nil {
@@ -229,8 +228,30 @@ func (aw *ActionsWorker) consume(callbacks ...ConsumedFunc) {
 	}
 }
 
-func (aw *ActionsWorker) saveToCassandra(trackRequest *models.TrackRequest) error {
+func (aw *ActionsWorker) saveToCassandra(trackRequest *lib.TrackRequest) error {
 	actionCreator := lib.NewActionCreator(aw.GeoIP)
+	metricRequestMatcher := lib.NewMetricRequestMatcherFromConfig(aw.Config)
+
+	matchingMetrics := metricRequestMatcher.Matching(trackRequest)
+
+	// Multidimensional metric counters increment
+	for _, metric := range matchingMetrics {
+		dimensionsNames, dimensionsValues := metric.DimensionsNamesAndDimensionsValues()
+
+		err := aw.RepositoryManager.MetricDayCounter.Increment(
+			dimensionsNames,
+			dimensionsValues,
+			time.Now(),
+		)
+		if err != nil {
+			return err
+		}
+
+		aw.Logger.WithFields(logrus.Fields{
+			"dimensionsNames":  dimensionsNames,
+			"dimensionsValues": dimensionsValues,
+		}).Debug("Metric counter has been successfully incremented.")
+	}
 
 	action, err := actionCreator.Create(trackRequest)
 	if err != nil {

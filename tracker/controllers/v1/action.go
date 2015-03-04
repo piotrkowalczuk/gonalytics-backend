@@ -10,7 +10,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/gocql/gocql"
 	"github.com/gocraft/web"
-	"github.com/piotrkowalczuk/gonalytics-backend/lib/models"
+	"github.com/piotrkowalczuk/gonalytics-backend/lib"
 )
 
 // VisitsGETHandler ...
@@ -34,7 +34,7 @@ func (bc *BaseContext) VisitsGETHandler(w web.ResponseWriter, r *web.Request) {
 	screenWidth, _ := strconv.ParseInt(r.FormValue("s.w"), 10, 64)
 	screenHeight, _ := strconv.ParseInt(r.FormValue("s.h"), 10, 64)
 
-	trackRequest := models.TrackRequest{
+	trackRequest := lib.TrackRequest{
 		SiteID:                 int64(siteID),
 		RemoteAddress:          r.RemoteAddr,
 		Domain:                 r.Header.Get("Origin"),

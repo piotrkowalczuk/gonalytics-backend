@@ -2,46 +2,7 @@ DROP KEYSPACE IF EXISTS gonalytics;
 
 CREATE KEYSPACE gonalytics WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
 
-CREATE TABLE IF NOT EXISTS gonalytics.visit_events
-(
-    visit_id timeuuid,
-    made_at timestamp,
-    name varchar,
-    value varchar,
-    PRIMARY KEY (visit_id, made_at),
-);
-
-CREATE TABLE IF NOT EXISTS gonalytics.metric_day_visits_counter
-(
-    dimensions_names varchar,
-    dimensions_values varchar,
-    made_at_day int,
-    made_at_month int,
-    made_at_year int,
-    count counter,
-    PRIMARY KEY ((dimensions_names, made_at_year, made_at_month, made_at_day), dimensions_values)
-)
-
-CREATE TABLE IF NOT EXISTS gonalytics.metric_month_visits_counter
-(
-    dimensions_names varchar,
-    dimensions_values varchar,
-    made_at_month int,
-    made_at_year int,
-    count counter,
-    PRIMARY KEY ((dimensions_names, made_at_year, made_at_month), dimensions_values)
-);
-
-CREATE TABLE IF NOT EXISTS gonalytics.metric_year_visits_counter
-(
-    dimensions_names varchar,
-    dimensions_values varchar,
-    made_at_year int,
-    count counter,
-    PRIMARY KEY ((dimensions_names, made_at_year), dimensions_values)
-);
-
-CREATE TABLE IF NOT EXISTS gonalytics.metric_day_actions_counter
+CREATE TABLE IF NOT EXISTS gonalytics.metric_day_counter
 (
     dimensions_names varchar,
     dimensions_values varchar,
@@ -52,7 +13,7 @@ CREATE TABLE IF NOT EXISTS gonalytics.metric_day_actions_counter
     PRIMARY KEY ((dimensions_names, made_at_year, made_at_month, made_at_day), dimensions_values)
 );
 
-CREATE TABLE IF NOT EXISTS gonalytics.metric_month_actions_counter
+CREATE TABLE IF NOT EXISTS gonalytics.metric_month_counter
 (
     dimensions_names varchar,
     dimensions_values varchar,
@@ -62,7 +23,7 @@ CREATE TABLE IF NOT EXISTS gonalytics.metric_month_actions_counter
     PRIMARY KEY ((dimensions_names, made_at_year, made_at_month), dimensions_values)
 );
 
-CREATE TABLE IF NOT EXISTS gonalytics.metric_year_actions_counter
+CREATE TABLE IF NOT EXISTS gonalytics.metric_year_counter
 (
     dimensions_names varchar,
     dimensions_values varchar,
