@@ -245,6 +245,8 @@ func (aw *ActionsWorker) saveToCassandra(trackRequest *lib.TrackRequest) error {
 		incrementableRepositories := []repositories.MetricIncrementer{
 			// Metrics by value
 			&aw.RepositoryManager.MetricDayByValueCounter,
+			&aw.RepositoryManager.MetricMonthByValueCounter,
+			&aw.RepositoryManager.MetricYearByValueCounter,
 			// Metrics by time frame
 			&aw.RepositoryManager.MetricDayByMinuteCounter,
 			&aw.RepositoryManager.MetricMonthByHourCounter,
