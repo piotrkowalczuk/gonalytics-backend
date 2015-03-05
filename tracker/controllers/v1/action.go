@@ -63,7 +63,7 @@ func (bc *BaseContext) VisitsGETHandler(w web.ResponseWriter, r *web.Request) {
 		DeviceIsTablet:         deviceIsTablet,
 		DeviceIsPhone:          deviceIsPhone,
 		DeviceIsMobile:         deviceIsMobile,
-		MadeAt:                 time.Now(),
+		ServerTime:             time.Now().UTC(),
 	}
 
 	message := ""

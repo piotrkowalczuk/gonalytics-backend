@@ -22,10 +22,10 @@ const (
 		location_country_name, location_country_code, location_country_id,
 		location_continent_name, location_continent_code, location_continent_id,
 		location_latitude, location_longitude, location_metro_code,
-		location_time_zone, location_postal_code, location_is_anonymous_proxy,
+		location_time, location_timezone, location_postal_code,
+		location_is_anonymous_proxy,
 		location_is_satellite_provider, page_title, page_host, page_url,
-		made_at, made_at_year, made_at_month, made_at_week, made_at_day,
-		made_at_hour, made_at_minute, made_at_second
+		server_time
 	`
 )
 
@@ -44,8 +44,7 @@ func (r *VisitActionsRepository) Insert(action *models.ActionEntity) error {
 	)
 	VALUES (
 		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-		?, ?, ?, ?
+		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 	)`
 
 	return cqlr.Bind(cql, action).Exec(r.Repository.Cassandra)
@@ -56,12 +55,12 @@ func (r *VisitActionsRepository) IsActiveVisit(visitID gocql.UUID) (bool, error)
 	nbOfActions := 0
 
 	cql := `SELECT COUNT(*) FROM ` + VisitActionsColumnFamily +
-		` WHERE visit_id = ? AND made_at >= ? LIMIT 1`
+		` WHERE visit_id = ? AND server_time >= ? LIMIT 1`
 
 	iter := r.Repository.Cassandra.Query(
 		cql,
 		visitID,
-		time.Now().Add(-models.MinVisitDuration),
+		time.Now().UTC().Add(-models.MinVisitDuration),
 	).Consistency(gocql.One).
 		Iter()
 

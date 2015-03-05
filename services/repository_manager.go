@@ -20,9 +20,11 @@ func InitRepositoryManager(cassandra *gocql.Session) {
 			Repository:   repository,
 			ColumnFamily: "visit_actions",
 		},
-		MetricDayCounter: repositories.MetricDayCounterRepository{
-			Repository:   repository,
-			ColumnFamily: "metric_day_counter",
-		},
+		// Metrics by value
+		MetricDayByValueCounter: repositories.NewMetricDayByValueCounterRepository(repository, "metric_day_by_value_counter"),
+		// Metrics by time frame
+		MetricDayByMinuteCounter: repositories.NewMetricDayByMinuteCounterRepository(repository, "metric_day_by_minute_counter"),
+		MetricMonthByHourCounter: repositories.NewMetricMonthByHourCounterRepository(repository, "metric_month_by_hour_counter"),
+		MetricYearByDayCounter:   repositories.NewMetricYearByDayCounterRepository(repository, "metric_year_by_day_counter"),
 	}
 }

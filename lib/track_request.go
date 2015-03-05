@@ -38,7 +38,7 @@ type TrackRequest struct {
 	DeviceIsTablet         bool
 	DeviceIsPhone          bool
 	DeviceIsMobile         bool
-	MadeAt                 time.Time
+	ServerTime             time.Time
 }
 
 // CreateMap ...

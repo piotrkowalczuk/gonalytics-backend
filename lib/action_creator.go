@@ -2,6 +2,7 @@ package lib
 
 import (
 	"net"
+	"time"
 
 	"github.com/gocql/gocql"
 	geoip2 "github.com/oschwald/geoip2-golang"
@@ -32,12 +33,16 @@ func (ac *ActionCreator) Create(trackRequest *TrackRequest) (*models.ActionEntit
 
 	var visitID gocql.UUID
 	visitID, err = gocql.ParseUUID(ac.trackRequest.VisitID)
-
 	if err != nil {
 		return nil, err
 	}
 
-	_, weekNumber := ac.trackRequest.MadeAt.ISOWeek()
+	timeLocation, err := time.LoadLocation(location.Timezone)
+	if err != nil {
+		return nil, err
+	}
+
+	locationTime := ac.trackRequest.ServerTime.In(timeLocation)
 
 	return &models.ActionEntity{
 		ID:                          gocql.TimeUUID(),
@@ -57,7 +62,8 @@ func (ac *ActionCreator) Create(trackRequest *TrackRequest) (*models.ActionEntit
 		LocationLatitude:            location.Latitude,
 		LocationLongitude:           location.Longitude,
 		LocationMetroCode:           location.MetroCode,
-		LocationTimeZone:            location.TimeZone,
+		LocationTime:                locationTime,
+		LocationTimezone:            location.Timezone,
 		LocationPostalCode:          location.PostalCode,
 		LocationIsAnonymousProxy:    location.IsAnonymousProxy,
 		LocationIsSatelliteProvider: location.IsSatelliteProvider,
@@ -82,19 +88,13 @@ func (ac *ActionCreator) Create(trackRequest *TrackRequest) (*models.ActionEntit
 		DeviceIsTablet:              ac.trackRequest.DeviceIsTablet,
 		DeviceIsPhone:               ac.trackRequest.DeviceIsPhone,
 		DeviceIsMobile:              ac.trackRequest.DeviceIsMobile,
-		MadeAt:                      ac.trackRequest.MadeAt,
-		MadeAtYear:                  ac.trackRequest.MadeAt.Year(),
-		MadeAtMonth:                 int(ac.trackRequest.MadeAt.Month()),
-		MadeAtWeek:                  weekNumber,
-		MadeAtDay:                   ac.trackRequest.MadeAt.Day(),
-		MadeAtHour:                  ac.trackRequest.MadeAt.Hour(),
-		MadeAtMinute:                ac.trackRequest.MadeAt.Minute(),
-		MadeAtSecond:                ac.trackRequest.MadeAt.Second(),
+		ServerTime:                  ac.trackRequest.ServerTime,
 	}, nil
 }
 
 func (ac *ActionCreator) createLocation() (*models.Location, error) {
-	geoLocation, err := ac.geoIP.City(net.ParseIP(ac.trackRequest.GetRequestIP()))
+	// geoLocation, err := ac.geoIP.City(net.ParseIP(ac.trackRequest.GetRequestIP()))
+	geoLocation, err := ac.geoIP.City(net.ParseIP("92.225.124.196"))
 	if err != nil {
 		return nil, err
 	}

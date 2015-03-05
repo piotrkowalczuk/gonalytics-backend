@@ -10,6 +10,7 @@ import (
 	"github.com/gocql/gocql"
 	geoip2 "github.com/oschwald/geoip2-golang"
 	"github.com/piotrkowalczuk/gonalytics-backend/lib"
+	"github.com/piotrkowalczuk/gonalytics-backend/lib/repositories"
 )
 
 const (
@@ -238,11 +239,29 @@ func (aw *ActionsWorker) saveToCassandra(trackRequest *lib.TrackRequest) error {
 	for _, metric := range matchingMetrics {
 		dimensionsNames, dimensionsValues := metric.DimensionsNamesAndDimensionsValues()
 
-		err := aw.RepositoryManager.MetricDayCounter.Increment(
-			dimensionsNames,
-			dimensionsValues,
-			time.Now(),
-		)
+		var err error
+
+		now := time.Now().UTC()
+		incrementableRepositories := []repositories.MetricIncrementer{
+			// Metrics by value
+			&aw.RepositoryManager.MetricDayByValueCounter,
+			// Metrics by time frame
+			&aw.RepositoryManager.MetricDayByMinuteCounter,
+			&aw.RepositoryManager.MetricMonthByHourCounter,
+			&aw.RepositoryManager.MetricYearByDayCounter,
+		}
+		incrementor := func(repository repositories.MetricIncrementer) {
+			if err != nil {
+				return
+			}
+
+			err = repository.Increment(dimensionsNames, dimensionsValues, now)
+		}
+
+		for _, repository := range incrementableRepositories {
+			incrementor(repository)
+		}
+
 		if err != nil {
 			return err
 		}
@@ -250,7 +269,7 @@ func (aw *ActionsWorker) saveToCassandra(trackRequest *lib.TrackRequest) error {
 		aw.Logger.WithFields(logrus.Fields{
 			"dimensionsNames":  dimensionsNames,
 			"dimensionsValues": dimensionsValues,
-		}).Debug("Metric counter has been successfully incremented.")
+		}).Debug("Metric counters has been successfully incremented.")
 	}
 
 	action, err := actionCreator.Create(trackRequest)

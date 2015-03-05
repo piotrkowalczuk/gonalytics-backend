@@ -14,34 +14,25 @@ CREATE TABLE IF NOT EXISTS gonalytics.metric_day_by_minute_counter
     PRIMARY KEY ((dimensions_names, dimensions_values, made_at_year, made_at_month, made_at_day), made_at_minute)
 );
 
-CREATE TABLE IF NOT EXISTS gonalytics.metric_month_by_day_counter
+CREATE TABLE IF NOT EXISTS gonalytics.metric_month_by_hour_counter
+(
+    dimensions_names varchar,
+    dimensions_values varchar,
+    made_at_hour int,
+    made_at_month int,
+    made_at_year int,
+    count counter,
+    PRIMARY KEY ((dimensions_names, dimensions_values, made_at_year, made_at_month), made_at_hour)
+);
+
+CREATE TABLE IF NOT EXISTS gonalytics.metric_year_by_day_counter
 (
     dimensions_names varchar,
     dimensions_values varchar,
     made_at_day int,
-    made_at_month int,
     made_at_year int,
     count counter,
-    PRIMARY KEY ((dimensions_names, dimensions_values, made_at_year, made_at_month), made_at_day)
-);
-
-CREATE TABLE IF NOT EXISTS gonalytics.metric_year_by_month_counter
-(
-    dimensions_names varchar,
-    dimensions_values varchar,
-    made_at_month int,
-    made_at_year int,
-    count counter,
-    PRIMARY KEY ((dimensions_names, dimensions_values, made_at_year), made_at_month)
-);
-
-CREATE TABLE IF NOT EXISTS gonalytics.metric_by_year_counter
-(
-    dimensions_names varchar,
-    dimensions_values varchar,
-    made_at_year int,
-    count counter,
-    PRIMARY KEY ((dimensions_names, dimensions_values), made_at_year)
+    PRIMARY KEY ((dimensions_names, dimensions_values, made_at_year), made_at_day)
 );
 
 CREATE TABLE IF NOT EXISTS gonalytics.metric_minute_by_value_counter
