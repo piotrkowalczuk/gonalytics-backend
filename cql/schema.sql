@@ -95,14 +95,7 @@ CREATE TABLE IF NOT EXISTS gonalytics.visit_actions
     referrer varchar,
     language varchar,
     // MADE AT
-    made_at timestamp,
-    made_at_year int,
-    made_at_month int,
-    made_at_week int,
-    made_at_day int,
-    made_at_hour int,
-    made_at_minute int,
-    made_at_second int,
+    server_time timestamp,
     // BROWSER
     browser_name varchar,
     browser_version varchar,
@@ -136,7 +129,8 @@ CREATE TABLE IF NOT EXISTS gonalytics.visit_actions
     location_continent_id int,
     location_latitude double,
     location_longitude double,
-    location_time_zone varchar,
+    location_time timestamp,
+    location_timezone varchar,
     location_metro_code int,
     location_postal_code varchar,
     location_is_anonymous_proxy boolean,
@@ -145,5 +139,5 @@ CREATE TABLE IF NOT EXISTS gonalytics.visit_actions
     page_title varchar,
     page_host varchar,
     page_url varchar,
-    PRIMARY KEY (visit_id, made_at),
+    PRIMARY KEY (visit_id, server_time),
 ) WITH comment='Column family contains actions.';
